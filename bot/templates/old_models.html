@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "_macros.html" as macros %}
+
+{% block title %}PPM Bot{% endblock %}
+
+{% block page_content %}
+
+<div style="font-family:Segoe UI">
+    <center>
+        <h3 class="well">Models Built in the Past </h3>
+    </center>
+</div>
+
+
+<form enctype="multipart/form-data" action="" method="post">
+    {{ form.hidden_tag() }}
+    <div class="form-row">
+        <div class='col-md-3'>
+        </div>
+        <div class='col-md-4' style="font-family:Segoe UI">
+            <div class='form-group'>
+                <!---<label for="search_project"> <h4> Search for the Project </h4></label> --->
+
+            {% if form.h_search_project.data %}
+                {{form.search_project(class='form-control',size='40',type='text',placeholder=search_message,id="search_project")}}
+            {% else %}
+                {{form.search_project(class='form-control',size='40',type='text',placeholder='Search for Project',id="search_project")}}
+            {% endif %}
+
+
+            </div>
+        </div>
+        <div class='col-md-2'>
+            <div class='form-group'>
+                <button class="btn btn-md btn-primary" type="submit"> Submit  </button>
+            </div>
+        </div>
+    </div>
+</form>
+
+<table class="table" style="font-family:Segoe UI">
+  <thead class="thead-light">
+    <tr>
+      <th scope="col">Built Time</th>
+      <th scope="col">Project Name</th>
+      <th scope="col">Model Description</th>
+      <th scope="col">What You can Do</th>
+    </tr>
+  </thead>
+  {% for ppm in ppms %}
+  <tbody>
+    <tr>
+      <td>{{moment(ppm.timestamp).fromNow() }}</td>
+      <td>{{ppm.project}}</td>
+      <td>{{ppm.desc}}</td>
+      <td>
+          <span> <a href="{{ url_for('ui.view_reports',id=ppm.id) }}"> View Reports | </span>
+          <!--<span> <a href="{{ url_for('api.download_reports',id=ppm.id) }}"> Download Reports | </span> -->
+          <span> <a href="{{ url_for('ui.work_with_model',id=ppm.id) }}"> Work with the Model  </span>
+      </td>
+    </tr>
+  </tbody>
+  {% endfor %}
+</table>
+
+{% if pagination %}
+<div class="pagination">
+    {{ macros.pagination_widget(pagination, '.old_models',form.h_search_project.data) }}
+</div>
+{% endif %}
+
+{{form.h_search_project}}
+
+{% endblock %}

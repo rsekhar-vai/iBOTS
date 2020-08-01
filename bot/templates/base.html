@@ -1,0 +1,57 @@
+{% extends "bootstrap/base.html" %}
+
+{% block title %}PPM Helper{% endblock %}
+
+{% block head %}
+{{ super() }}
+<link rel="shortcut icon" href="{{ url_for('static', filename='Org.png') }}" type="image/x-icon"
+>
+<link rel="icon" href="{{ url_for('static', filename='Org.png') }}" type="image/x-icon">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+{% endblock %}
+
+{% block navbar %}
+<div class="navbar navbar-inverse" role="navigation" style="background-color: #140865; margin-bottom:0px ">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="{{ url_for('ui.index')}}" style="color:#ffffff">iPPA</a>
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li><a href="{{ url_for('ui.new_model')}}" style="font-family:Segoe UI">Create a New Process Agent</a></li>
+                <li><a href="{{ url_for('ui.old_models')}}" style="font-family:Segoe UI">Work With Existing Agents</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li class="nav-item active" style="font-family:Segoe UI"><a href="{{ url_for('ui.user_guide')}}">User Guide</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    {% for message in get_flashed_messages() %}
+    <div class="alert alert-danger">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        {{ message }}
+    </div>
+    {% endfor %}
+
+    {% block page_content %}{% endblock %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+{{ moment.include_moment() }}
+
+
+{% endblock %}
+

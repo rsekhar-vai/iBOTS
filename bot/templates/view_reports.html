@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "_macros.html" as macros %}
+
+
+{% block title %}PPM Bot {% endblock %}
+
+
+{% block styles %}
+    {{ super() }}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.8.1/baguetteBox.min.css">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles-4.css') }}">
+
+{% endblock styles %}
+
+{% block scripts %}
+    {{ super() }}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.8.1/baguetteBox.min.js"></script>
+    <script>
+        baguetteBox.run('.tz-gallery');
+    </script>
+{% endblock %}
+
+{% block page_content %}
+
+
+<div class="panel with-nav-tabs panel-default" style="font-family:Segoe UI; margin-top:20px">
+    <div class="panel-heading">
+        <center><h3>View Reports</h3>
+        <ul class="nav nav-tabs nav-justified">
+            <li class="active"><a href="#tab1" data-toggle="tab"><b> Understand Data </b></a></li>
+            <li><a href="#tab2" data-toggle="tab"><b>Model Selection</b></a></li>
+            <li><a href="#tab3" data-toggle="tab"><b>Model Interpretation</b></a></li>
+            <li><a href="#tab4" data-toggle="tab"><b>Control Charts</b></a></li>
+            <li><a href="{{ url_for('api.download_reports',id=id) }}"><b>Download All Reports</b></a></li>
+        </ul></center>
+    </div>
+</div>
+
+<div class="panel-body" style="font-family:Segoe UI">
+    <div class="tab-content">
+        <div class="tab-pane fade in active" id="tab1">
+            <div class="container gallery-container"><div class="tz-gallery"><div class="row">
+            {% for report in ud_reports %}
+                <div class="col-sm-6 col-md-3">
+                    <div class="thumbnail">
+                        <a class="lightbox" href="{{url_for('ui.send_report',filename=report.filename)}}">
+                            <img src="{{url_for('ui.send_report',filename=report.filename)}}">
+                        </a>
+                        <div class="caption">
+                            <h3><center>{{report.desc}}</center></h3>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+            </div></div></div>
+        </div>
+        <div class="tab-pane fade" id="tab2">
+            <div class="container gallery-container"><div class="tz-gallery"><div class="row">
+            {% for report in ms_reports %}
+                <div class="col-sm-6 col-md-4">
+                    <div class="thumbnail">
+                        <a class="lightbox" href="{{url_for('ui.send_report',filename=report.filename)}}">
+                            <img src="{{url_for('ui.send_report',filename=report.filename)}}">
+                        </a>
+                        <div class="caption">
+                            <h3><center>{{report.desc}}</center></h3>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+            </div></div></div>
+        </div>
+
+        <div class="tab-pane fade" id="tab3">
+            <div class="container gallery-container"><div class="tz-gallery"><div class="row">
+            {% for report in mi_reports %}
+                <div class="col-sm-6 col-md-3">
+                    <div class="thumbnail">
+                        <a class="lightbox" href="{{url_for('ui.send_report',filename=report.filename)}}">
+                            <img src="{{url_for('ui.send_report',filename=report.filename)}}">
+                        </a>
+                        <div class="caption">
+                            <h3><center>{{report.desc}}</center></h3>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+            </div></div></div>
+        </div>
+
+        <div class="tab-pane fade" id="tab4">
+            <div class="container gallery-container"><div class="tz-gallery"><div class="row">
+            {% for report in cc_reports %}
+                <div class="col-sm-6 col-md-3">
+                    <div class="thumbnail">
+                        <a class="lightbox" href="{{url_for('ui.send_report',filename=report.filename)}}">
+                            <img src="{{url_for('ui.send_report',filename=report.filename)}}">
+                        </a>
+                        <div class="caption">
+                            <h3><center>{{report.desc}}</center></h3>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+            </div></div></div>
+        </div>
+    </div>
+</div>
+
+<p class="page-description text-center" style="font-family:Segoe UI; font-size:18px">*** End of Reports ***</p>
+
+{% endblock page_content %}

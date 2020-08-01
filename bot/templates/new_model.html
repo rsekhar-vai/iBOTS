@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+
+{% block title %} iPPA {% endblock %}
+
+
+{% block page_content %}
+
+<form enctype="multipart/form-data" action="" method="post">
+
+    {{ form.hidden_tag() }}
+
+<div style="font-family:Segoe UI">
+	<center>
+    	<h3 class="well">Create New Model </h3>
+	</center>
+</div>
+
+<div style="font-family:Segoe UI">
+    <div class='col-md-4' style="font-family:Segoe UI">
+        <div class="form-row"><div class='form-group'>
+            <label for="project"> <h4> Name of the Project </h4></label>
+            {{form.project(class='form-control',size='40',type='text',placeholder="Name of the Project",id="project")}}
+        </div></div>
+
+        <div class="form-row"><div class='form-group'>
+            <label for="desc"> <h4> Model Description </h4> </label>
+            {{form.desc(class='form-control',size='40',type='text',placeholder="Model Description",id="desc")}}
+        </div></div>
+
+        <div class="form-row"><div class='form-group'>
+			<label for="data"> <h4> Upload the Data for Creating Model </h4> </label>
+            {{form.data(class='form-control',size='40',id="data")}}
+            </span>
+        </div></div>
+		<div class="form-row"><div class='form-group'>
+			<label for="what-if"> <h4> Upload inputs for What-If </h4><p>(Else ranges will be defaulted based on input data) </p> </label>
+            {{form.for_what_if_data(class='form-control',size='40',id="what-if")}}
+            </span>
+        </div></div>
+
+    </div>
+    <div class='col-md-1'>
+    </div>
+    <div class='col-md-3' style="font-family:Segoe UI">
+
+        <h4>Choose the Algorithms to try</h4>
+
+		<div class="form-check">
+			<label>
+				<input type="checkbox" name="simple_linear" checked disabled> <span class="label-text">Simple Linear</span>
+			</label>
+		</div>
+		<div class="form-check">
+			<label>
+				<input type="checkbox" name="simple_polynomial" checked> <span class="label-text">Simple Polynomial</span>
+			</label>
+		</div>
+		<div class="form-check">
+			<label>
+				<input type="checkbox" name="support_vectors" checked> <span class="label-text">Support Vectors</span>
+			</label>
+		</div>
+		<div class="form-check">
+			<label>
+				<input type="checkbox" name="decision_trees" checked> <span class="label-text">Decision Trees</span>
+			</label>
+		</div>
+		<div class="form-check">
+			<label>
+				<input type="checkbox" name="random_forests" checked> <span class="label-text">Random Forests</span>
+			</label>
+		</div>
+		<div class="form-check">
+			<label>
+				<input type="checkbox" name="adaboost" checked> <span class="label-text">Adaboost</span>
+			</label>
+		</div>
+		<div class="form-check">
+			<label>
+				<input type="checkbox" name="bayesian" checked> <span class="label-text">Bayesian</span>
+			</label>
+		</div>
+		<div class="form-check">
+			<label>
+				<input type="checkbox" name="lasso" checked> <span class="label-text">Lasso</span>
+			</label>
+		</div>
+		<div class="form-check">
+			<label>
+				<input type="checkbox" name="ridge" checked> <span class="label-text">Ridge</span>
+			</label>
+		</div>
+		<div class="form-check">
+			<label>
+				<input type="checkbox" name="neural_networks" checked> <span class="label-text">Neural Networks</span>
+			</label>
+		</div>
+	</div>
+    <div class='col-md-4' style="font-family:Segoe UI">
+
+        <h4>Choose Data Processing Parameters</h4>
+
+
+		<div class="form-check">
+            <div class="form-row"><div class='form-group'>
+                <label> Model Objective: </label><br>
+                            {{wtf.form_field(form.model_objective)}}
+            </div></div>
+            <div class="form-row"><div class='form-group'>
+				<label for="optimization_goal"> Optimization Goal (for Regression): </label>
+                            {{wtf.form_field(form.optimization_goal)}}
+
+            </div></div>
+			<label>
+				<input type="checkbox" name="outlier_removal" checked> <span class="label-text">Remove Outliers</span>
+			</label>
+
+    	</div>
+    </div>
+</div>
+
+
+<div class='col-md-11'>
+<div class="form-row"><div class='form-group'>
+    <br>
+    <br>
+    <center>
+        <button class="btn btn-lg btn-primary" type="submit"> Submit  </button>
+    </center>
+</div></div></div>
+
+</form>
+
+{% endblock %}

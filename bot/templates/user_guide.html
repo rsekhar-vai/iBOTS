@@ -1,0 +1,487 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+
+{% block title %} iPPA {% endblock %}
+
+{% block styles %}
+    {{ super() }}
+    <style>
+<!--
+ /* Font Definitions */
+ @font-face
+	{font-family:"Cambria Math";
+	panose-1:2 4 5 3 5 4 6 3 2 4;}
+@font-face
+	{font-family:Calibri;
+	panose-1:2 15 5 2 2 2 4 3 2 4;}
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin-top:0cm;
+	margin-right:0cm;
+	margin-bottom:8.0pt;
+	margin-left:0cm;
+	line-height:107%;
+	font-size:11.0pt;
+	font-family:"Calibri",sans-serif;}
+p.MsoHeader, li.MsoHeader, div.MsoHeader
+	{mso-style-link:"Header Char";
+	margin:0cm;
+	margin-bottom:.0001pt;
+	font-size:11.0pt;
+	font-family:"Calibri",sans-serif;}
+p.MsoFooter, li.MsoFooter, div.MsoFooter
+	{mso-style-link:"Footer Char";
+	margin:0cm;
+	margin-bottom:.0001pt;
+	font-size:11.0pt;
+	font-family:"Calibri",sans-serif;}
+span.HeaderChar
+	{mso-style-name:"Header Char";
+	mso-style-link:Header;}
+span.FooterChar
+	{mso-style-name:"Footer Char";
+	mso-style-link:Footer;}
+.MsoPapDefault
+	{margin-bottom:8.0pt;
+	line-height:107%;}
+ /* Page Definitions */
+ @page WordSection1
+	{size:595.3pt 841.9pt;
+	margin:72.0pt 72.0pt 72.0pt 72.0pt;}
+div.WordSection1
+	{page:WordSection1;}
+table {
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+}
+-->
+</style>
+
+
+{% endblock styles %}
+{% block page_content %}
+
+
+<div style="font-family:Segoe UI">
+	<center>
+    	<h3 class="well">Guide for Using iPPA </h3>
+	</center>
+</div>
+
+<div class=WordSection1>
+
+<table class=MsoTableGrid border=1 cellspacing=0 cellpadding=0 width=0
+ style='width:843.05pt;border-collapse:collapse;border:none'>
+ <tr style='height:15.0pt'>
+  <td width=243 nowrap valign=top style='width:182.0pt;border:solid windowtext 1.0pt;
+  padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt'>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+  normal'><b>Variable</b></p>
+  </td>
+  <td width=111 nowrap valign=top style='width:83.0pt;border:solid windowtext 1.0pt;
+  border-left:none;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt'>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+  normal'><b>Input Format</b></p>
+  </td>
+  <td width=111 nowrap valign=top style='width:83.0pt;border:solid windowtext 1.0pt;
+  border-left:none;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt'>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+  normal'><b>Type</b></p>
+  </td>
+  <td width=424 nowrap valign=top style='width:317.85pt;border:solid windowtext 1.0pt;
+  border-left:none;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt'>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+  normal'><b>Remarks</b></p>
+  </td>
+  <td width=236 nowrap valign=top style='width:177.2pt;border:solid windowtext 1.0pt;
+  border-left:none;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt'>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+  normal'><b>Various Random Examples for Encoding</b></p>
+  </td>
+ </tr>
+ <tr style='height:15.0pt'>
+  <td width=243 nowrap valign=top style='width:182.0pt;border:solid windowtext 1.0pt;
+  border-top:none;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt'>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+  normal'>datadir</p>
+  </td>
+  <td width=111 nowrap valign=top style='width:83.0pt;border-top:none;
+  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt'>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+  normal'>Folder</p>
+  </td>
+  <td width=111 nowrap valign=top style='width:83.0pt;border-top:none;
+  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt'>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+  normal'>Output</p>
+  </td>
+  <td width=424 nowrap valign=top style='width:317.85pt;border-top:none;
+  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt'>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+  normal'>Directory Name - To save outputdata</p>
+  </td>
+  <td width=236 nowrap valign=top style='width:177.2pt;border-top:none;
+  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt'>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+  normal'>&nbsp;</p>
+  </td>
+ </tr>
+ <tr style='height:15.0pt'>
+  <td width=243 nowrap valign=top style='width:182.0pt;border:solid windowtext 1.0pt;
+  border-top:none;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt'>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+  normal'>best_model_file</p>
+  </td>
+  <td width=111 nowrap valign=top style='width:83.0pt;border-top:none;
+  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt'>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+  normal'>PKL</p>
+  </td>
+  <td width=111 nowrap valign=top style='width:83.0pt;border-top:none;
+  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt'>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+  normal'>Output/Input</p>
+  </td>
+  <td width=424 nowrap valign=top style='width:317.85pt;border-top:none;
+  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt'>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+  normal'>File Name - To save model output/ load model output for future usage</p>
+  </td>
+  <td width=236 nowrap valign=top style='width:177.2pt;border-top:none;
+  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt'>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+  normal'>&nbsp;</p>
+  </td>
+ </tr>
+ <tr style='height:217.5pt'>
+  <td width=243 nowrap valign=top style='width:182.0pt;border:solid windowtext 1.0pt;
+  border-top:none;padding:0cm 5.4pt 0cm 5.4pt;height:217.5pt'>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+  normal'>data_in_file</p>
+  </td>
+  <td width=111 nowrap valign=top style='width:83.0pt;border-top:none;
+  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  padding:0cm 5.4pt 0cm 5.4pt;height:217.5pt'>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+  normal'>CSV</p>
+  </td>
+  <td width=111 nowrap valign=top style='width:83.0pt;border-top:none;
+  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  padding:0cm 5.4pt 0cm 5.4pt;height:217.5pt'>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+  normal'>Input</p>
+  </td>
+  <td width=424 valign=top style='width:317.85pt;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  padding:0cm 5.4pt 0cm 5.4pt;height:217.5pt'>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+  normal'>Numerical X to be encoded as &quot;X_&quot;<br>
+  Ordinal X to be encoded as &quot;XO_&quot;<br>
+  Nominal X to be encoded as &quot;XN_&quot;<br>
+  Nominal X for Method to be encoded as &quot;XN_M_&quot;<br>
+  Y to be encoded as &quot;Y_&quot;<br>
+  ID to encoded as &quot;ID_&quot;&nbsp;(PS: Keep this column at last. CSV gets
+  corrupt if this is in first column)<br>
+  Sub-Process X (Continuous data) to be encoded as &quot;X_SP_CNTS_&quot;<br>
+  Sub-Process X (Defects data) to be encoded as &quot;X_SP_DTS_&quot;<br>
+  Sub-Process X (Defectives data) to be encoded as &quot;X_SP_DTVS_&quot;</p>
+  </td>
+  <td width=236 valign=top style='width:177.2pt;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  padding:0cm 5.4pt 0cm 5.4pt;height:217.5pt'>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+  normal'>X_Avg_Experience<br>
+  X_SP_CNTS_KEDB Usage%<br>
+  X_SP_CNTS_Code_Review_Effort%<br>
+  X_SP_DTS_UT_Defects<br>
+  XO_Complexity<br>
+  XO_Competency_Level<br>
+  XN_Technology<br>
+  XN_M_Tool_Used<br>
+  XN_Application_Name<br>
+  Y_Productivity<br>
+  ID_Enhancement_Name<br>
+  ID_Release_Name<br>
+  ID_Month<br>
+  ID_Week_No.</p>
+  </td>
+ </tr>
+ <tr style='height:15.0pt'>
+  <td width=243 nowrap valign=top style='width:182.0pt;border:solid windowtext 1.0pt;
+  border-top:none;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt'>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+  normal'>ppb_data_file</p>
+  </td>
+  <td width=111 nowrap valign=top style='width:83.0pt;border-top:none;
+  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt'>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+  normal'>CSV</p>
+  </td>
+  <td width=111 nowrap valign=top style='width:83.0pt;border-top:none;
+  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt'>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+  normal'>Output</p>
+  </td>
+  <td width=424 nowrap valign=top style='width:317.85pt;border-top:none;
+  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt'>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+  normal'>File Name - To publish baselines for Numerical X, Y</p>
+  </td>
+  <td width=236 nowrap valign=top style='width:177.2pt;border-top:none;
+  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt'>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+  normal'>&nbsp;</p>
+  </td>
+ </tr>
+ <tr style='height:60.0pt'>
+  <td width=243 nowrap valign=top style='width:182.0pt;border:solid windowtext 1.0pt;
+  border-top:none;padding:0cm 5.4pt 0cm 5.4pt;height:60.0pt'>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+  normal'>trials_data_file</p>
+  </td>
+  <td width=111 nowrap valign=top style='width:83.0pt;border-top:none;
+  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  padding:0cm 5.4pt 0cm 5.4pt;height:60.0pt'>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+  normal'>CSV</p>
+  </td>
+  <td width=111 nowrap valign=top style='width:83.0pt;border-top:none;
+  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  padding:0cm 5.4pt 0cm 5.4pt;height:60.0pt'>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+  normal'>Input</p>
+  </td>
+  <td width=424 valign=top style='width:317.85pt;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  padding:0cm 5.4pt 0cm 5.4pt;height:60.0pt'>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+  normal'>For What-if analysis<br>
+  To get inputs of min. value, max. value, steps for Numerical X (picked during
+  Data Preprocessing), to be used for feature recommendation</p>
+  </td>
+  <td width=236 valign=top style='width:177.2pt;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  padding:0cm 5.4pt 0cm 5.4pt;height:60.0pt'>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+  normal'>Trials &nbsp; X1 &nbsp; X2<br>
+  Min. &nbsp; &nbsp;0 &nbsp; &nbsp;&nbsp; 0<br>
+  Max. &nbsp; 1 &nbsp; &nbsp; &nbsp;50<br>
+  Steps &nbsp;101 &nbsp;51</p>
+  </td>
+ </tr>
+ <tr style='height:15.0pt'>
+  <td width=243 nowrap valign=top style='width:182.0pt;border:solid windowtext 1.0pt;
+  border-top:none;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt'>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+  normal'>Recommended_Features_data_file</p>
+  </td>
+  <td width=111 nowrap valign=top style='width:83.0pt;border-top:none;
+  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt'>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+  normal'>CSV</p>
+  </td>
+  <td width=111 nowrap valign=top style='width:83.0pt;border-top:none;
+  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt'>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+  normal'>Output</p>
+  </td>
+  <td width=424 nowrap valign=top style='width:317.85pt;border-top:none;
+  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt'>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+  normal'>File Name -To save recommended feature values</p>
+  </td>
+  <td width=236 nowrap valign=top style='width:177.2pt;border-top:none;
+  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt'>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+  normal'>&nbsp;</p>
+  </td>
+ </tr>
+ <tr style='height:30.0pt'>
+  <td width=243 nowrap valign=top style='width:182.0pt;border:solid windowtext 1.0pt;
+  border-top:none;padding:0cm 5.4pt 0cm 5.4pt;height:30.0pt'>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+  normal'>risk_quanatification_file</p>
+  </td>
+  <td width=111 nowrap valign=top style='width:83.0pt;border-top:none;
+  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  padding:0cm 5.4pt 0cm 5.4pt;height:30.0pt'>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+  normal'>CSV</p>
+  </td>
+  <td width=111 nowrap valign=top style='width:83.0pt;border-top:none;
+  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  padding:0cm 5.4pt 0cm 5.4pt;height:30.0pt'>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+  normal'>Input/Output</p>
+  </td>
+  <td width=424 nowrap valign=top style='width:317.85pt;border-top:none;
+  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  padding:0cm 5.4pt 0cm 5.4pt;height:30.0pt'>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+  normal'>Input/Output File for Risk Quantification: To find risk
+  quantification for non-recommeded methods for the Most significant Sub
+  Process X</p>
+  </td>
+  <td width=236 valign=top style='width:177.2pt;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  padding:0cm 5.4pt 0cm 5.4pt;height:30.0pt'>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+  normal'>XN_M_Reviewer_Profile<br>
+  Risk_Quantification (%)</p>
+  </td>
+ </tr>
+ <tr style='height:45.0pt'>
+  <td width=243 nowrap valign=top style='width:182.0pt;border:solid windowtext 1.0pt;
+  border-top:none;padding:0cm 5.4pt 0cm 5.4pt;height:45.0pt'>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+  normal'>Control_Chart_data_file</p>
+  </td>
+  <td width=111 nowrap valign=top style='width:83.0pt;border-top:none;
+  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  padding:0cm 5.4pt 0cm 5.4pt;height:45.0pt'>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+  normal'>CSV</p>
+  </td>
+  <td width=111 nowrap valign=top style='width:83.0pt;border-top:none;
+  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  padding:0cm 5.4pt 0cm 5.4pt;height:45.0pt'>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+  normal'>Input</p>
+  </td>
+  <td width=424 nowrap valign=top style='width:317.85pt;border-top:none;
+  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  padding:0cm 5.4pt 0cm 5.4pt;height:45.0pt'>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+  normal'>For Control Charts - Contains columns for  - ALL significant Sub
+  Processes X, ID</p>
+  </td>
+  <td width=236 valign=top style='width:177.2pt;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  padding:0cm 5.4pt 0cm 5.4pt;height:45.0pt'>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+  normal'>ID <br> X_SP_CNTS_Code_Review_Effort %  <br>
+  X_SP_CNTS_Code_Review_Effort% <br>
+  X_SP_DTS_UT_Defects <br>
+  </td>
+ </tr>
+ <tr style='height:215.25pt'>
+  <td width=243 nowrap valign=top style='width:182.0pt;border:solid windowtext 1.0pt;
+  border-top:none;padding:0cm 5.4pt 0cm 5.4pt;height:215.25pt'>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+  normal'>prediction_data_file</p>
+  </td>
+  <td width=111 nowrap valign=top style='width:83.0pt;border-top:none;
+  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  padding:0cm 5.4pt 0cm 5.4pt;height:215.25pt'>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+  normal'>CSV</p>
+  </td>
+  <td width=111 nowrap valign=top style='width:83.0pt;border-top:none;
+  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  padding:0cm 5.4pt 0cm 5.4pt;height:215.25pt'>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+  normal'>Input/Output</p>
+  </td>
+  <td width=424 valign=top style='width:317.85pt;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  padding:0cm 5.4pt 0cm 5.4pt;height:215.25pt'>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+  normal'>Encoded as <b>data_in_file</b> with following changes -<br>
+  Predicted Y to be encoded as &quot;Predicted_Y_&quot;<br>
+  Predicted Y Lower CI column to be encoded as
+  &quot;Predicted_Y_Lower_CI_&quot;<br>
+  Predicted Y Upper CI column to be encoded as
+  &quot;Predicted_Y_Upper_CI_&quot;<br>
+  Actual Y column to be encoded as &quot;Actual_Y_&quot;</p>
+  </td>
+  <td width=236 valign=top style='width:177.2pt;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  padding:0cm 5.4pt 0cm 5.4pt;height:215.25pt'>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+  normal'>X_Avg. Experience<br>
+  X_SP_CNTS_KEDB Usage %<br>
+  X_SP_CNTS_Code_Review_Effort %<br>
+  X_SP_DTS_UT_Defects<br>
+  XO_Complexity<br>
+  XO_Competency_Level<br>
+  XN_Technology<br>
+  XN_Application_Name<br>
+  XN_M_Tool_Used<br>
+  Predicted_Y_Productivity<br>
+  Predicted_Y_Productivity_Lower_CI<br>
+  Predicted_Y_Productivity_Upper_CI<br>
+  Actual_Y_Productivity<br>
+  ID_Enhancement_Name</p>
+  </td>
+ </tr>
+ <tr style='height:207.75pt'>
+  <td width=243 nowrap valign=top style='width:182.0pt;border:solid windowtext 1.0pt;
+  border-top:none;padding:0cm 5.4pt 0cm 5.4pt;height:207.75pt'>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+  normal'>recalibration_data_file</p>
+  </td>
+  <td width=111 nowrap valign=top style='width:83.0pt;border-top:none;
+  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  padding:0cm 5.4pt 0cm 5.4pt;height:207.75pt'>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+  normal'>CSV</p>
+  </td>
+  <td width=111 nowrap valign=top style='width:83.0pt;border-top:none;
+  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  padding:0cm 5.4pt 0cm 5.4pt;height:207.75pt'>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+  normal'>Input</p>
+  </td>
+  <td width=424 nowrap valign=top style='width:317.85pt;border-top:none;
+  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  padding:0cm 5.4pt 0cm 5.4pt;height:207.75pt'>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+  normal'>Same as prediction_data_file (With values updated for Actual_Y, ID)</p>
+  </td>
+  <td width=236 valign=top style='width:177.2pt;border-top:none;border-left:
+  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  padding:0cm 5.4pt 0cm 5.4pt;height:207.75pt'>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+  normal'>X_Avg. Experience<br>
+  X_SP_CNTS_KEDB Usage %<br>
+  X_SP_CNTS_Code_Review_Effort %<br>
+  X_SP_DTS_UT_Defects<br>
+  XO_Complexity<br>
+  XO_Competency_Level<br>
+  XN_Technology<br>
+  XN_M_Tool_Used<br>
+  Predicted_Y_Productivity<br>
+  Predicted_Y_Productivity_Lower_CI<br>
+  Predicted_Y_Productivity_Upper_CI<br>
+  Actual_Y_Productivity<br>
+  ID_Enhancement_Name</p>
+  </td>
+ </tr>
+</table>
+
+<p class=MsoNormal>&nbsp;</p>
+
+</div>
+
+</div>
+
+
+{% endblock %}

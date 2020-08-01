@@ -1,0 +1,243 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+
+{% block title %} iPPA {% endblock %}
+
+
+{% block page_content %}
+
+
+<div class="panel with-nav-tabs panel-default" style="font-family:Segoe UI; margin-top:20px">
+    <div class="panel-heading">
+        <center><h3>Work With the Model</h3>
+        <ul class="nav nav-tabs nav-justified">
+            <li class={{active1}}><a href="#tab1" data-toggle="tab"><b>Interactive Prediction</b></a></li>
+            <li class={{active1a}}><a href="#tab1a" data-toggle="tab"><b>Batch Prediction</b></a></li>
+            <li class={{active2}}><a href="#tab2" data-toggle="tab"><b>Control Charts</b></a></li>
+            <li class={{active3}}><a href="#tab3" data-toggle="tab"><b>Recalibration</b></a></li>
+        </ul></center>
+    </div>
+</div>
+
+<div class="panel-body" style="font-family:Segoe UI">
+    <div class="tab-content">
+
+        <div class="tab-pane fade {{in1}} {{active1}}" id="tab1">
+             <form enctype="multipart/form-data" class="form-inline" method="post">
+                {{ form1.hidden_tag() }}
+                <div class="form-row">
+                    <div class='col-md-2'></div>
+                    <div class='col-md-5'>
+                        <div class='form-group'>
+                            <label for="project"> <h4> Name of the Project : </h4></label>
+                            {{form1.project}}
+                        </div>
+                    </div>
+                    <div class='col-md-5'>
+                        <div class='form-group'>
+                            <label for="desc"> <h4> Model Description : </h4> </label>
+                            {{form1.desc}}
+                        </div>
+                    </div>
+                </div>
+                <br><br><br><br>
+                 <div class='col-md-7' style="font-family:Segoe UI">
+                    <div class="form-check">
+                        {% for field in form1%}
+                            <div class="row">
+                                {% if field.type == 'StringField' %}
+                                    <label style="width:40%" align="center"><h5> {{field.label}} </h5></label>
+                                    {{field(class='form-control')}}
+                                    <b style="color:red">{{field.message}}</b>
+                                {% elif field.type == 'SelectField' %}
+                                    <label style="width:40%" align="center"><h5> {{field.label}} </h5></label>
+                                    {{field(class='form-control')}}
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                        <br><br>
+                        <center>
+                            <input class="btn btn-md btn-primary" type="submit" name="submit1"> </input>
+                        </center>
+                    </div>
+                 </div>
+                 {% if form1.message1 != ''%}
+                 <div class='col-md-5 well' style="font-family:Segoe UI">
+                     <h4 style="color:#C62621">
+                         {{form1.message1}}
+                     </h4>
+                    <h5>
+                     <br>
+                         {{form1.message2}}
+                     <br><br>
+                         {{form1.message3}}
+                    </h5>
+                 </div>
+                 {% endif %}
+            </form>
+
+        </div>
+
+        <div class="tab-pane fade {{in1a}} {{active1a}}" id="tab1a">
+            <form enctype="multipart/form-data" method="post">
+                {{ form1a.hidden_tag() }}
+                <div class="form-row">
+                    <div class='col-md-2'></div>
+                    <div class='col-md-5'>
+                        <br>
+                        <div class='form-group'>
+                            <label for="project"> <h4> Name of the Project : </h4></label>
+                            {{form1a.project}}
+                        </div>
+                    </div>
+                    <div class='col-md-5'>
+                        <br>
+                        <div class='form-group'>
+                            <label for="desc"> <h4> Model Description : </h4> </label>
+                            {{form1a.desc}}
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class='col-md-2'></div>
+                    <div class='col-md-5'>
+                        <div class='form-group'>
+                            <label for="data1a"> <h4> Input Data for Prediction </h4> </label>
+                            {{form1a.for_prediction_data(class='form-control',size='40',id="data1a")}}
+                        </div>
+                    </div>
+                    <div class='col-md-2'>
+                        <br><br>
+                        <center>
+                            <input class="btn btn-md btn-primary" type="submit" name="submit1a"> </input>
+                        </center>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+
+        <div class="tab-pane fade {{in2}} {{active2}}" id="tab2" style="font-family:Segoe UI">
+            <form enctype="multipart/form-data" method="post">
+                {{ form2.hidden_tag() }}
+                <div class="form-row">
+                    <div class='col-md-2'></div>
+                    <div class='col-md-5'>
+                        <br>
+                        <div class='form-group'>
+                            <label for="project"> <h4> Name of the Project : </h4></label>
+                            {{form2.project}}
+                        </div>
+                    </div>
+                    <div class='col-md-5'>
+                        <br>
+                        <div class='form-group'>
+                            <label for="desc"> <h4> Model Description : </h4> </label>
+                            {{form2.desc}}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class='col-md-2'></div>
+                    <div class='col-md-5'>
+                        <div class='form-group'>
+                            <label for="data2"> <h4> Input Data for Control Charts </h4> </label>
+                            {{form2.for_controlcharts_data(class='form-control',size='25',id="data2")}}
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class='col-md-2'></div>
+                     <div class='col-md-5'>
+                        <div class='form-group'>
+                            <label for="chart_type"> <h4> Control Chart Type </h4> </label>
+                            {{form2.chart_type(class='form-control',id="chart_type")}}
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class='col-md-2'></div>
+                    <div class='col-md-5'>
+                        <br>
+                        <div class='form-group'>
+                            <label for="target_value"> <h4> Target Value : </h4> </label>
+                             {{form2.target_value(class='form-control',size='25',type='text',placeholder="Target Value",id="target_value")}}
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <div class="form-row">
+                    <div class='col-md-2'></div>
+                    <div class='col-md-5'><br></div>
+                     <div class='col-md-2'></div>
+                </div>
+                <div class="form-row">
+                    <div class='col-md-5'>
+                        <br><br><br><br>
+                        <div class='form-group' align="left">
+                            <input class="btn btn-md btn-primary" type="submit" name="submit2"> </input>
+                        </div>
+                    </div>
+                </div>
+
+                                    <br><br><br><br><br>
+
+                <p align="center">
+                  <I>
+                      For XmR-X & XmR-MR charts, the input csv file should have data with columnname starting with <b>CC_</b><br><br>
+                      For P & U control charts, the input csv file should have data with the columnnames <b>NR & DR.</b><br>
+
+                    For e.g., SameDayFix/No.of.Defects should be under the column name <b>NR</b> <br>
+                      Total incidents/Total weeks should be under the column name <b>DR</b></I>
+                </p>
+            </form>
+        </div>
+
+        <div class="tab-pane fade {{in3}} {{active3}}" id="tab3">
+            <form enctype="multipart/form-data" action="" method="post">
+                {{ form3.hidden_tag() }}
+                <div class="form-row">
+                    <div class='col-md-2'></div>
+                    <div class='col-md-5'>
+                        <br>
+                        <div class='form-group'>
+                            <label for="project"> <h4> Name of the Project : </h4></label>
+                            {{form3.project}}
+                        </div>
+                    </div>
+                    <div class='col-md-5'>
+                        <br>
+                        <div class='form-group'>
+                            <label for="desc"> <h4> Model Description : </h4> </label>
+                            {{form3.desc}}
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class='col-md-2'></div>
+                    <div class='col-md-5'>
+                        <div class='form-group'>
+                            <label for="data3"> <h4> Input Data for Recalibration </h4> </label>
+                            {{form3.for_calibration_data(class='form-control',size='40',id="data3")}}
+                        </div>
+                    </div>
+                    <div class='col-md-2'>
+                        <br><br>
+                        <center>
+                            <input class="btn btn-md btn-primary" type="submit" name="submit3"> </input>
+                        </center>
+                    </div>
+                </div>
+                <div class="row"><div class='col-md-12'>
+                    <br><br>
+                    <h3 style="color:blue"><center>{{form3.message}}</center></h3>
+                </div></div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

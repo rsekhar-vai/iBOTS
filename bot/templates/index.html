@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "_macros.html" as macros %}
+
+{% block title %}PPM Bot{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+{% endblock %}
+
+
+{% block page_content %}
+<div class="container-flud">
+<div class="well" style="font-family:Segoe UI; margin-top:20px">
+    <div class="container"><div class="row">
+        <div class="col-md-12">
+    <h1 class="display-4"> Welcome to Intelligent Process Performance Agent </h1>
+    <h4> This Bot enables Intelligence in Processes for Optimal Performance using Machine Learning Algorithms -
+         Simple Regression, Bayesian Regression, Decision Trees, Random Forests, Boosting,
+         Support Vector Machines, Neural Networks .. and more ....
+    </h4>
+    <li> Understand Process Performance Patterns </li>
+    <li> Predict Future Performance of Process </li>
+    <li> Find Optimal Process Settings </li>
+    <li> Monitor the Process Performance </li>
+    <li> Recalibrate with new Data </li>
+     </div>
+
+    </div></div>
+</div>
+
+ <div class="col-md-6 right-align">
+     <br>
+     <center>
+     <a href="{{ url_for('ui.new_model') }}">
+     <button class="btn btnb1 btn-primary btn-lg" >
+         <br>
+         <h4>
+         Create New Process Agent
+         </h4>
+         <br>
+     </button>
+     <br>
+     </center>
+     </a>
+ </div>
+
+
+ <div class="col-md-6 left-align">
+     <br>
+     <center>
+     <a href="{{ url_for('ui.old_models') }}">
+     <button class="btn btnb2 btn-primary btn-lg" >
+         <br>
+         <h4>
+         Work with Existing Agents
+         </h4>
+         <br>
+     </button>
+     <br>
+     </center>
+     </a>
+ </div>
+
+
+{% endblock %}

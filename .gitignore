@@ -1,0 +1,6 @@
+venv 
+.idea
+*.db
+*.pyc
+__pycache__
+logging.cfg
