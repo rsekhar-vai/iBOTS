@@ -84,111 +84,96 @@ class User(UserMixin, db.Model):
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-class PPM(db.Model):
-    __tablename__ = 'PPMs'
+class Agent(db.Model):
+    __tablename__ = 'agents'
     id = db.Column(db.Integer, primary_key=True)
-    project = db.Column(db.Text)
-    desc = db.Column(db.Text)
+    process_name = db.Column(db.Text)
+    agent_name = db.Column(db.Text)
     options = db.Column(db.PickleType)
-    features = db.Column(db.PickleType)
     data = db.Column(db.Text)
+    features = db.Column(db.PickleType)
     model = db.Column(db.Text)
-    reports = db.Column(db.Text)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     author = db.Column(db.Integer)
     scope = db.Column(db.String(64))
-    status = db.Column(db.Text)
 
     def to_json(self):
-        json_ppm = {
-            'project': self.project,
-            'desc' : self.desc,
+        json_agent = {
+            'process_name': self.process_name,
+            'agent_name' : self.agent_name,
             'options' : self.options,
             'features': self.features,
             'data' : self.data,
             'model' :self.model,
-            'reports': self.reports,
             'timestamp' : self.timestamp,
             'author' : self.author,
             'scope' : self.scope,
             'status' : self.status
         }
-        return json_ppm
+        return json_agent
 
     @staticmethod
-    def create_from_json(json_ppm):
-        project = json_ppm.get('project')
-        desc = json_ppm.get('desc')
-        options_tuple = json_ppm.get('options')
+    def create_from_json(json_agent):
+        process_name = json_agent.get('process_name')
+        agent_name = json_agent.get('agent_name')
+        options_tuple = json_agent.get('options')
         options = options_tuple._asdict()
-        features = json_ppm.get('features')
-        data = json_ppm.get('data')
-        model = json_ppm.get('model')
-        reports = json_ppm.get('reports')
-        author = json_ppm.get('author')
-        scope = json_ppm.get('scope')
-        status = json_ppm.get('status')
+        data = json_agent.get('data')
+        features = json_agent.get('features')
+        model = json_agent.get('model')
+        author = json_agent.get('author')
+        scope = json_agent.get('scope')
+        status = json_agent.get('status')
         if scope == 'Dept':
             scope = g.org.lower()
         author = g.username
         status = 0
 
-        ppm = PPM(project=project, desc=desc, options=options, features=features, data=data, model=model, reports=reports,
-                   author=author,scope=scope,status=status)
+        agent = Agent(process_name=process_name, agent_name=agent_name, options=options, features=features,
+                      data=data, model=model, author=author,scope=scope)
         success = True
         try:
-            db.session.add(ppm)
+            db.session.add(agent)
             db.session.commit()
         except:
             success = False
 
-        return success, ppm
+        return success, agent
 
     @staticmethod
-    def get_ppm_by_id(id):
+    def get_agent_by_id(id):
         success = True
         try:
-            ppm = PPM.query.filter_by(id=id).first()
-            if not (ppm.author == g.username or ppm.scope == g.org or ppm.scope == 'unit'):
-                ppm = None
+            agent = Agent.query.filter_by(id=id).first()
+            if not (agent.author == g.username or agent.scope == g.org or agent.scope == 'unit'):
+                agent = None
         except:
             success = False
-        return success, ppm
+        return success, agent
 
     @staticmethod
-    def delete_ppm(id):
+    def delete_agent(id):
         success = True
         try:
-            ppm = PPM.query.filter_by(id=id).first()
-            if ppm.author != g.username:
+            agent = Agent.query.filter_by(id=id).first()
+            if agent.author != g.username:
                 success = False
             else:
-                ppm = PPM.query.filter_by(id=id).delete()
+                agent = Agent.query.filter_by(id=id).delete()
                 db.session.commit()
         except:
             success = False
         return success
 
     @staticmethod
-    def get_ppm_list(project,page,per_page):
+    def get_agent_list(process_name,page,per_page):
         success = True
         try:
-            ppmlist = PPM.query.filter(PPM.project.like(project) &
-                ((PPM.author == g.username) | (PPM.scope == g.org) | (PPM.scope == 'unit'))) \
-                .order_by(PPM.timestamp.desc()) \
+            agentlist = Agent.query.filter(Agent.process_name.like(process_name) &
+                ((Agent.author == g.username) | (Agent.scope == g.org) | (Agent.scope == g.unit))) \
+                .order_by(Agent.timestamp.desc()) \
                 .paginate(page, per_page,error_out=False)
         except:
             success = False
-        return success, ppmlist
+        return success, agentlist
 
-    @staticmethod
-    def update_ppm_as_success(ppm):
-        ppm.status = 1
-        success = True
-        try:
-            db.session.add(ppm)
-            db.session.commit()
-        except:
-            success = False
-
-        return success

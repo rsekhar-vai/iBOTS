@@ -2,7 +2,7 @@
 {% import "bootstrap/wtf.html" as wtf %}
 {% import "_macros.html" as macros %}
 
-{% block title %}PPM Bot{% endblock %}
+{% block title %}agent Bot{% endblock %}
 
 {% block scripts %}
 {{ super() }}
@@ -14,16 +14,16 @@
 <div class="well" style="font-family:Segoe UI; margin-top:20px">
     <div class="container"><div class="row">
         <div class="col-md-12">
-    <h1 class="display-4"> Welcome to Intelligent Process Performance Agent </h1>
+    <h1 class="display-4"> iPPA - Intelligent Process Performance Agent BOT </h1>
     <h4> This Bot enables Intelligence in Processes for Optimal Performance using Machine Learning Algorithms -
          Simple Regression, Bayesian Regression, Decision Trees, Random Forests, Boosting,
-         Support Vector Machines, Neural Networks .. and more ....
+         Support Vector Machines, Neural Networks and more ....
     </h4>
-    <li> Understand Process Performance Patterns </li>
-    <li> Predict Future Performance of Process </li>
-    <li> Find Optimal Process Settings </li>
-    <li> Monitor the Process Performance </li>
-    <li> Recalibrate with new Data </li>
+    <li> Shows Process Performance Patterns </li>
+    <li> Predicts Future Performance of Process </li>
+    <li> Recommends Optimal Process Settings </li>
+    <li> Monitors the Process Performance </li>
+    <li> Recalibrates with new Data </li>
      </div>
 
     </div></div>
@@ -32,7 +32,7 @@
  <div class="col-md-6 right-align">
      <br>
      <center>
-     <a href="{{ url_for('ui.new_model') }}">
+     <a href="{{ url_for('ui.new_agent') }}">
      <button class="btn btnb1 btn-primary btn-lg" >
          <br>
          <h4>
@@ -49,7 +49,7 @@
  <div class="col-md-6 left-align">
      <br>
      <center>
-     <a href="{{ url_for('ui.old_models') }}">
+     <a href="{{ url_for('ui.existing_agents') }}">
      <button class="btn btnb2 btn-primary btn-lg" >
          <br>
          <h4>

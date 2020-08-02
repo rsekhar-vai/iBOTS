@@ -30,7 +30,7 @@ from .utils import *
 random_state = np.random.RandomState(42)
 
 
-def select_model(ppmdata, featgroup, datagroup, summary_data_file,
+def select_model(agentdata, featgroup, datagroup, summary_data_file,
                  directory, options, save=True):
 
     model_to_try = namedtuple('model_to_try', 'model_name,func,params,sensitive_to_correlation')
@@ -279,27 +279,27 @@ def plot_residuals_predictions(best_model, directory, save=True):
 
     return
 
-def evaluate_reg(model_name, mdl, ppmtrx_prepared, ppmtr_y, ppmtsx_prepared,
-                 ppmts_y, directory):
+def evaluate_reg(model_name, mdl, agenttrx_prepared, agenttr_y, agenttsx_prepared,
+                 agentts_y, directory):
     np.random.seed(42)
 
     if model_name == '2d-Poly Regression':
         poly = PolynomialFeatures(degree=2)
-        ppmtsx_prepared = poly.fit_transform(ppmtsx_prepared)
-        ppmtrx_prepared = poly.fit_transform(ppmtrx_prepared)
-    ppmtry_predicted = mdl.predict(ppmtrx_prepared)
-    ppmtsy_predicted = mdl.predict(ppmtsx_prepared)
+        agenttsx_prepared = poly.fit_transform(agenttsx_prepared)
+        agenttrx_prepared = poly.fit_transform(agenttrx_prepared)
+    agenttry_predicted = mdl.predict(agenttrx_prepared)
+    agenttsy_predicted = mdl.predict(agenttsx_prepared)
 
     error_summary = namedtuple('error_summary','mse_train,mse_test,r2_train,r2_test,'
                                                'mape_train,mape_test')
     #error_summary = namedtuple('error_summary', 'mse_train,mse_test,r2_train,r2_test')
 
-    error_summary.mse_train = format(mean_squared_error(ppmtr_y, ppmtry_predicted),'2.9f')
-    error_summary.mse_test = format(np.clip(mean_squared_error(ppmts_y, ppmtsy_predicted),-100,100),'2.9f')
-    error_summary.r2_train = format(np.clip(r2_score(ppmtr_y, ppmtry_predicted),-100,100),'2.2f')
-    error_summary.r2_test = format(np.clip(r2_score(ppmts_y, ppmtsy_predicted),-100,100),'2.2f')
-    error_summary.mape_train = format(get_map_error(ppmtr_y, ppmtry_predicted),'2.6f')
-    error_summary.mape_test = format(get_map_error(ppmts_y, ppmtsy_predicted),'2.6f')
+    error_summary.mse_train = format(mean_squared_error(agenttr_y, agenttry_predicted),'2.9f')
+    error_summary.mse_test = format(np.clip(mean_squared_error(agentts_y, agenttsy_predicted),-100,100),'2.9f')
+    error_summary.r2_train = format(np.clip(r2_score(agenttr_y, agenttry_predicted),-100,100),'2.2f')
+    error_summary.r2_test = format(np.clip(r2_score(agentts_y, agenttsy_predicted),-100,100),'2.2f')
+    error_summary.mape_train = format(get_map_error(agenttr_y, agenttry_predicted),'2.6f')
+    error_summary.mape_test = format(get_map_error(agentts_y, agenttsy_predicted),'2.6f')
 
     return error_summary
 
@@ -463,12 +463,12 @@ def check_feature_redundancy(best_model, feature_redundancy_chart_file, director
 
 	
 def predict_for_new_data(best_model, directory, featgroup,
-                         ppmdata, newdata, sigma, prediction_output_file, save=True):
+                         agentdata, newdata, sigma, prediction_output_file, save=True):
 
     x_names_nom, x_names_ord, x_names_num_model = \
         (best_model.features_nom, best_model.features_ord, best_model.features_num)
 
-    X_original = ppmdata[x_names_num_model].values
+    X_original = agentdata[x_names_num_model].values
     encoder = StandardScaler()
     X_original = encoder.fit_transform(X_original)
     X_pred = newdata[x_names_num_model].values
@@ -477,14 +477,14 @@ def predict_for_new_data(best_model, directory, featgroup,
     if len(x_names_ord) > 0:
         ord_x_mapper = [(x_names_ord[i], LabelEncoder()) for i, col in enumerate(x_names_ord)]
         mapper = DataFrameMapper(ord_x_mapper)
-        mapper.fit_transform(ppmdata)
+        mapper.fit_transform(agentdata)
         Ord_X = mapper.transform(newdata)
         X_pred = np.append(X_pred, Ord_X, 1)
 
     if len(x_names_nom) > 0:
         Nom_X = np.empty((len(newdata[x_names_nom[0]]), 1))
         for i, col in enumerate(x_names_nom):
-            dummies = pd.get_dummies(ppmdata[x_names_nom[i]]).rename(columns=lambda x: 'Category_' + str(x))
+            dummies = pd.get_dummies(agentdata[x_names_nom[i]]).rename(columns=lambda x: 'Category_' + str(x))
             new_dummies = pd.get_dummies(newdata[x_names_nom[i]]).rename(columns=lambda x: 'Category_' + str(x))
             new_dummies = new_dummies.reindex(columns=dummies.columns, fill_value=0)
             X_pred = np.append(X_pred, np.array(new_dummies), 1)
@@ -547,7 +547,7 @@ def strip_feature_name(name,drop_category=False):
 
 
 def load_csv_data(data_file):
-    """ To load PPM Data"""
+    """ To load agent Data"""
     return pd.read_csv(data_file)
 
 
@@ -685,7 +685,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.neural_network import MLPClassifier
 
-def select_classification_model(ppmdata, featgroup, datagroup, summary_data_file,
+def select_classification_model(agentdata, featgroup, datagroup, summary_data_file,
                  directory, options, save=True):
 
     model_to_try = namedtuple('model_to_try', 'model_name,func,params,sensitive_to_correlation')
@@ -850,23 +850,23 @@ def fit_classification_models(model_search_space, datagroup, featgroup, director
 
     return fitted_models, fitment_summary
 
-def evaluate_classification(model_name, mdl, ppmtrx_prepared, ppmtr_y, ppmtsx_prepared,
-                 ppmts_y, directory):
+def evaluate_classification(model_name, mdl, agenttrx_prepared, agenttr_y, agenttsx_prepared,
+                 agentts_y, directory):
     np.random.seed(42)
 
-    ppmtry_predicted = mdl.predict(ppmtrx_prepared)
-    ppmtsy_predicted = mdl.predict(ppmtsx_prepared)
+    agenttry_predicted = mdl.predict(agenttrx_prepared)
+    agenttsy_predicted = mdl.predict(agenttsx_prepared)
 
     error_summary = namedtuple('accuracy_summary','accuracy_score,mse_test,r2_train,r2_test,'
                                                'mape_train,mape_test')
     #error_summary = namedtuple('error_summary', 'mse_train,mse_test,r2_train,r2_test')
 
-    error_summary.mse_train = format(mean_squared_error(ppmtr_y, ppmtry_predicted),'2.9f')
-    error_summary.mse_test = format(np.clip(mean_squared_error(ppmts_y, ppmtsy_predicted),-100,100),'2.9f')
-    error_summary.r2_train = format(np.clip(r2_score(ppmtr_y, ppmtry_predicted),-100,100),'2.2f')
-    error_summary.r2_test = format(np.clip(r2_score(ppmts_y, ppmtsy_predicted),-100,100),'2.2f')
-    error_summary.mape_train = format(get_map_error(ppmtr_y, ppmtry_predicted),'2.6f')
-    error_summary.mape_test = format(get_map_error(ppmts_y, ppmtsy_predicted),'2.6f')
+    error_summary.mse_train = format(mean_squared_error(agenttr_y, agenttry_predicted),'2.9f')
+    error_summary.mse_test = format(np.clip(mean_squared_error(agentts_y, agenttsy_predicted),-100,100),'2.9f')
+    error_summary.r2_train = format(np.clip(r2_score(agenttr_y, agenttry_predicted),-100,100),'2.2f')
+    error_summary.r2_test = format(np.clip(r2_score(agentts_y, agenttsy_predicted),-100,100),'2.2f')
+    error_summary.mape_train = format(get_map_error(agenttr_y, agenttry_predicted),'2.6f')
+    error_summary.mape_test = format(get_map_error(agentts_y, agenttsy_predicted),'2.6f')
 
     return error_summary
 

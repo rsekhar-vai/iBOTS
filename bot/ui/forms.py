@@ -48,40 +48,12 @@ class EditProfileAdminForm(FlaskForm):
             raise ValidationError('Username already in use.')
 
 
-class TextFieldForm(FlaskForm):
-    feature = StringField()
-
-class NumFieldForm(FlaskForm):
-    feature = IntegerField()
-
-class SelectFieldForm(FlaskForm):
-    feature = SelectField()
-
-class TestForm(FlaskForm):
-    name = StringField("Name Of Student",validators=[DataRequired()])
-    Gender = RadioField('Gender', choices=[('M', 'Male'), ('F', 'Female')],validators=[DataRequired()])
-    language = SelectField('Languages', choices=[('cpp', 'C++'),('py', 'Python')],validators=[DataRequired()])
-    num_features = FieldList(FormField(NumFieldForm),min_entries=2)
-    select_features = FieldList(FormField(SelectFieldForm), min_entries=2)
-    submit = SubmitField("Submit")
-
-class NewModelForm(FlaskForm):
-    project = StringField(validators=[DataRequired(),Length(max=30)])
-    desc = StringField(validators=[DataRequired(),Length(max=30)])
+class NewAgentForm(FlaskForm):
+    process_name = StringField(validators=[DataRequired(),Length(max=30)])
+    agent_name = StringField(validators=[DataRequired(),Length(max=30)])
     data = FileField(label='Upload the Data',validators=[FileRequired()])
     for_what_if_data = FileField(label='Upload What-If Inputs')
-
-    simple_linear = BooleanField(default="checked")
-    support_vectors = BooleanField(default="checked")
-    neural_networks = BooleanField(default="checked")
-    random_forests = BooleanField(default="checked")
-    decision_trees = BooleanField(default="checked")
-    adaboost = BooleanField(default="checked")
-    bayesian = BooleanField(default="checked")
-    ridge = BooleanField(default="checked")
-    lasso = BooleanField(default="checked")
-
-    model_objective = RadioField(choices=[('regression', 'Regression'), ('classification', 'Classification')], default='regression')
+    agent_type = RadioField(choices=[('regression', 'Regression'), ('classification', 'Classification')], default='regression')
     outlier_removal = BooleanField(default="checked")
     optimization_goal = RadioField(choices=[('minimize', 'Minimize'), ('maximize', 'Maximize')], default='minimize')
     scope = RadioField(choices=[('user', 'User'), ('Dept', 'Dept'),('Org','Org')], default='user')
@@ -89,16 +61,7 @@ class NewModelForm(FlaskForm):
 
     submit = SubmitField('Submit')
 
-class UploadModelForm(FlaskForm):
-    project = StringField(validators=[DataRequired(),Length(max=30)])
-    desc = StringField(validators=[DataRequired(),Length(max=30)])
-    datafile = FileField(label='Upload the Data',validators=[FileRequired()])
-    modelfile = FileField(label='Upload the Model', validators=[FileRequired()])
-
-    submit = SubmitField('Submit')
-
-
-class OldModelsForm(FlaskForm):
+class ExistingAgentsForm(FlaskForm):
     search_project = StringField(validators=[Length(max=30)])
 
     h_search_project = HiddenField()
@@ -145,7 +108,7 @@ class CalibrationForm(FlaskForm):
     for_calibration_data = FileField(label='Upload the Data',validators=[FileRequired()])
     submit3 = SubmitField('Submit')
 
-class DeleteModelForm(FlaskForm):
+class DeleteAgentForm(FlaskForm):
 
     project = StringField()
     desc = StringField()

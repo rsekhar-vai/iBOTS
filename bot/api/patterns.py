@@ -1,4 +1,4 @@
-# PPM Utilities Module
+# agent Utilities Module
 
 #from ..spc import *
 import numpy as np
@@ -87,7 +87,7 @@ os.environ["PATH"] += os.pathsep + 'D:/Python/graphviz-2.38/release/bin'
 
 random_state = np.random.RandomState(42)
 
-def analyze_patterns(ppmdata, directory,
+def analyze_patterns(agentdata, directory,
                        vif_thresh, outliers_fraction, build_model, save=True):
 
     continue_execution = True
@@ -112,7 +112,7 @@ def analyze_patterns(ppmdata, directory,
     rowid_outlier =[]    
     
     ################################
-    for col in ppmdata.columns:  # Classify X's into Numerical/Nominal
+    for col in agentdata.columns:  # Classify X's into Numerical/Nominal
         # or Categorical data
         if col[:3] == "XN_":
             x_feat_nom.append(col)
@@ -128,11 +128,11 @@ def analyze_patterns(ppmdata, directory,
             row_id.append(col)
 
         if col[:3] != "ID_":
-            if is_string_dtype(ppmdata[col]):
+            if is_string_dtype(agentdata[col]):
                 if col[:3] != "XN_" and col[:3] != "XO_":
                     warning_messages.append(col + " has wrong data type! Execution will be aborted.")
                     continue_execution = False
-            elif is_numeric_dtype(ppmdata[col]):
+            elif is_numeric_dtype(agentdata[col]):
                 if col[:2] != "X_" and col[:2] != "Y_":
                     warning_messages.append(col + " has wrong data type! Execution will be aborted.")
                     continue_execution = False
@@ -149,17 +149,17 @@ def analyze_patterns(ppmdata, directory,
         warning_messages.append("No ID found in the dataset")
 
     if continue_execution:
-        for col in ppmdata.columns:  # For Missing Values
-            if ppmdata[col].isnull().values.ravel().sum() > 0:
+        for col in agentdata.columns:  # For Missing Values
+            if agentdata[col].isnull().values.ravel().sum() > 0:
                 if col in x_feat_num:
                     imputer = Imputer(missing_values='NaN', strategy='mean')
-                    ppmdata[col] = imputer.fit_transform(ppmdata[[col]]).ravel()
+                    agentdata[col] = imputer.fit_transform(agentdata[[col]]).ravel()
                 elif col in y_feat:
                     imputer = Imputer(missing_values='NaN', strategy='mean')
-                    ppmdata[col] = imputer.fit_transform(ppmdata[[col]]).ravel()
+                    agentdata[col] = imputer.fit_transform(agentdata[[col]]).ravel()
                 else:
                     mapper = DataFrameMapper([([col], Imputer())])
-                    ppmdata[col] = mapper.fit_transform(ppmdata)
+                    agentdata[col] = mapper.fit_transform(agentdata)
 
     if len(x_feat_num) > 0 and continue_execution and build_model:
         # For plotting joint plots, histograms, pair plots
@@ -167,27 +167,27 @@ def analyze_patterns(ppmdata, directory,
         #sns.set()
         sns.set_context('poster')
         for dep_feat in x_feat_num:
-            sns.jointplot(ppmdata[dep_feat],
-                          ppmdata[y_feat[0]], kind="kde", dropna=False)
+            sns.jointplot(agentdata[dep_feat],
+                          agentdata[y_feat[0]], kind="kde", dropna=False)
             if save:
                 save_fig(directory,"UD_Jointplot_for_" + dep_feat)
 
         sns.set_context("paper", font_scale=3, rc={"font.size": 8, "axes.labelsize": 5})
 
         plt.style.use('ggplot')
-        orig_columns = ppmdata.columns
-        ppmdata.columns = cleanup_header(list(ppmdata.columns))
+        orig_columns = agentdata.columns
+        agentdata.columns = cleanup_header(list(agentdata.columns))
 
         sns.set(font_scale=1.3)
-        sns.pairplot(ppmdata[ppmdata.columns], size=2.5)
+        sns.pairplot(agentdata[agentdata.columns], size=2.5)
         plt.tight_layout()
         if save:
             save_fig(directory,'UD_Scatter Plots', tight_layout=False)
-        ppmdata.columns = orig_columns
+        agentdata.columns = orig_columns
 
         sns.set_context("paper", font_scale=3, rc={"font.size": 8, "axes.labelsize": 5})
         heatmap_features = x_feat_num + y_feat
-        cm = np.corrcoef(ppmdata[heatmap_features].values.T)
+        cm = np.corrcoef(agentdata[heatmap_features].values.T)
         sns.set(font_scale=1.5)
         sns.heatmap(cm, annot=True, cbar=False,cmap="Blues",fmt='.2f',annot_kws={'size':15},
                     xticklabels=heatmap_features, yticklabels=heatmap_features)
@@ -201,7 +201,7 @@ def analyze_patterns(ppmdata, directory,
     if len(x_feat_num) > 1 and continue_execution:
         variables = np.arange(len(x_feat_num))
         d = [x_feat_num[ix] for ix in list(variables)]
-        vif_ = [vif(ppmdata[d].values, ix) for ix in range(len(d))]
+        vif_ = [vif(agentdata[d].values, ix) for ix in range(len(d))]
         vif_report_data = list(zip(d, vif_))
         dropped = True
         while dropped:
@@ -209,7 +209,7 @@ def analyze_patterns(ppmdata, directory,
             d = []
             d = [x_feat_num[ix] for ix in list(variables)]
             if len(d) > 1:
-                vif_ = [vif(ppmdata[d].values, ix) for ix in range(len(d))]
+                vif_ = [vif(agentdata[d].values, ix) for ix in range(len(d))]
                 maxloc = vif_.index(max(vif_))
                 if float(max(vif_)) > float(vif_thresh):
                     x_feat_num_corr.append(x_feat_num[variables[maxloc]])
@@ -222,23 +222,23 @@ def analyze_patterns(ppmdata, directory,
         #for outlier functionality
     ################################    
      
-    x_data_outlier = pd.DataFrame(ppmdata[x_data_outlier])          
-    rowid_outlier = pd.DataFrame(ppmdata[row_id])
+    x_data_outlier = pd.DataFrame(agentdata[x_data_outlier])
+    rowid_outlier = pd.DataFrame(agentdata[row_id])
    
     if len(x_feat_ord) > 0:  # To transform Ordinal X
         ord_x_mapper = [(x_feat_ord[i], LabelEncoder()) for i, col in enumerate(x_feat_ord)]    
         ord_encoder = DataFrameMapper(ord_x_mapper)
-        x_data_ord = ord_encoder.fit_transform(ppmdata)                                
+        x_data_ord = ord_encoder.fit_transform(agentdata)
         x_feat_nc = np.append(x_feat_nc, x_feat_ord)        
         x_data_ord_outlier_df = pd.DataFrame(x_data_ord)        
         x_data_ord_outlier_df.columns=x_feat_ord
         x_data_outlier= x_data_outlier.join(x_data_ord_outlier_df)       
         
     if len(x_feat_nom) > 0:  # To transform Nominal X
-        x_data_nom = np.empty((len(ppmdata[x_feat_nom[0]]), 1))
+        x_data_nom = np.empty((len(agentdata[x_feat_nom[0]]), 1))
         nom_encoder = []
         for i, col in enumerate(x_feat_nom):        
-            dummies = pd.get_dummies(ppmdata[x_feat_nom[i]]).rename(columns=lambda x: x_feat_nom[i] + ":" + str(x))           
+            dummies = pd.get_dummies(agentdata[x_feat_nom[i]]).rename(columns=lambda x: x_feat_nom[i] + ":" + str(x))
             #x_data_nom = np.append(x_data_nom, np.array(dummies), 1)
             x_data_outlier= x_data_outlier.join(dummies)
             x_feat_nc = np.append(x_feat_nc, dummies.columns.values)    
@@ -247,7 +247,7 @@ def analyze_patterns(ppmdata, directory,
     
     ################################
 
-    #X = ppmdata[x_feat_num].values
+    #X = agentdata[x_feat_num].values
     
     #if len(x_feat_num_nc) > 0 and continue_execution:
     if len(x_data_outlier.columns) > 0 and continue_execution:
@@ -389,12 +389,12 @@ def analyze_patterns(ppmdata, directory,
                 
                 Outlier_Rows=[]
                 Outlier_Rows = pd.DataFrame(df_tsne.loc[df_tsne.trueoutlier==1,['label']])
-                outlierdata_report=pd.DataFrame(columns=ppmdata.columns)
-                colname = ppmdata.columns[-1]
+                outlierdata_report=pd.DataFrame(columns=agentdata.columns)
+                colname = agentdata.columns[-1]
                 Outlier_Rows= pd.DataFrame(Outlier_Rows['label'].values,columns=['label'])
                 
                 for i in range(len(Outlier_Rows)):                
-                    outlierdata_report = outlierdata_report.append(ppmdata.loc[ppmdata[colname]==Outlier_Rows['label'][i]])
+                    outlierdata_report = outlierdata_report.append(agentdata.loc[agentdata[colname]==Outlier_Rows['label'][i]])
                     print("Dbug...... Outlier logic -- -Colname", colname)
                     print("Dbug...... Outlier logic -- -Colname", outlierdata_report[colname])
                     #outlierdata_report[colname] = outlierdata_report[colname].str.wrap(15)

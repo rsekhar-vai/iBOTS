@@ -1,6 +1,6 @@
 {% extends "bootstrap/base.html" %}
 
-{% block title %}PPM Helper{% endblock %}
+{% block title %}agent Helper{% endblock %}
 
 {% block head %}
 {{ super() }}
@@ -24,11 +24,15 @@
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-                <li><a href="{{ url_for('ui.new_model')}}" style="font-family:Segoe UI">Create a New Process Agent</a></li>
-                <li><a href="{{ url_for('ui.old_models')}}" style="font-family:Segoe UI">Work With Existing Agents</a></li>
+                <li><a href="{{ url_for('ui.new_agent')}}" style="font-family:Segoe UI">Create a New Agent</a></li>
+                <li><a href="{{ url_for('ui.existing_agents')}}" style="font-family:Segoe UI">Work With Existing Agents</a></li>
+                <li><a href="{{ url_for('ui.utilities')}}" style="font-family:Segoe UI">Utilities</a></li>
+                <li><a href="{{ url_for('ui.apis')}}" style="font-family:Segoe UI">APIs</a></li>
+
+
             </ul>
             <ul class="nav navbar-nav navbar-right">
-                <li class="nav-item active" style="font-family:Segoe UI"><a href="{{ url_for('ui.user_guide')}}">User Guide</a></li>
+                <li class="nav-item active" style="font-family:Segoe UI"><a href="{{ url_for('ui.user_guide')}}">Help</a></li>
             </ul>
         </div>
     </div>

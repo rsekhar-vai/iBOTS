@@ -12,7 +12,7 @@ from .predictions import *
 #from .recommendations import *
 from .utils import *
 from ..httpconfig import update_response_headers
-from ..models import PPM, User
+from ..models import Agent, User
 
 
 @api.before_request
@@ -35,17 +35,17 @@ def after_request(response):
 def create_model(json_create_model):
     response_code = 0
     json_create_model['author_id'] = g.username
-    success, ppm = PPM.create_from_json(json_create_model)
+    success, agent = agent.create_from_json(json_create_model)
     if not success:
         abort(500)
-    id = ppm.id
+    id = agent.id
     print("working with id...", id)
 
     datafile = json_create_model['datafile']
     for_what_if_data = json_create_model['for_what_if_data']
 
-    directory = os.path.join(current_app.config['OUT_FOLDER'], str(ppm.id))
-    filename = os.path.join(directory,ppm.data)
+    directory = os.path.join(current_app.config['OUT_FOLDER'], str(agent.id))
+    filename = os.path.join(directory,agent.data)
     filename4 = os.path.join(directory, 'whatif_input.csv')
     if not os.path.exists(os.path.dirname(filename)):
         try:
@@ -84,8 +84,8 @@ def create_model(json_create_model):
 
     if response_code == 0:
         try:
-            ppmnew = get_ppm_by_id(id)
-            success = PPM.update_ppm_as_success(ppmnew)
+            agentnew = get_agent_by_id(id)
+            success = agent.update_agent_as_success(agentnew)
             if not success:
                 abort(500)
         except:
@@ -111,7 +111,7 @@ def cleanup(id,infile,what_if_file,directory):
     except:
         abort(500)
     try:
-        delete_ppm(id)
+        delete_agent(id)
     except:
         abort(500)
 
@@ -140,11 +140,11 @@ def _create_model(infile,options,directory,what_if_file=None):
     feature_importance_data_file = current_app.config['FEATURE_IMPORTANCE']
     feature_redundancy_chart = current_app.config['FEATURE_REDUNDANCY']
 
-    ppmdata = load_csv_data(infile)
-    ppmdata.to_csv(os.path.join(directory,data_in_file), encoding='utf-8', index=False)
+    agentdata = load_csv_data(infile)
+    agentdata.to_csv(os.path.join(directory,data_in_file), encoding='utf-8', index=False)
 
     try:
-        messages, featgroup, outlier_rows, success = analyze_patterns(ppmdata, directory, vif_threshold,
+        messages, featgroup, outlier_rows, success = analyze_patterns(agentdata, directory, vif_threshold,
                                                                         outlier_limit_max, build_model,model_type)
     except:
         response_code = 'BuildError11'
@@ -158,8 +158,8 @@ def _create_model(infile,options,directory,what_if_file=None):
         return response_code
 
     try:
-        ppmdata, ppmdata_dropped, datagroup, featgroup = \
-                            prepare_data(featgroup, outlier_rows, ppmdata, remove_outliers)
+        agentdata, agentdata_dropped, datagroup, featgroup = \
+                            prepare_data(featgroup, outlier_rows, agentdata, remove_outliers)
     except:
         print("Error in preparing data.. Please check your input")
         response_code = 'BuildError13'
@@ -172,10 +172,10 @@ def _create_model(infile,options,directory,what_if_file=None):
 
         # Added for Classification
         if model_type.classification:
-            best_model, model_selected = select_classification_model(ppmdata, featgroup, datagroup, summary_data_file,
+            best_model, model_selected = select_classification_model(agentdata, featgroup, datagroup, summary_data_file,
                                                                      directory, options)
         else:
-            best_model, model_selected = select_model(ppmdata, featgroup, datagroup, summary_data_file, directory,
+            best_model, model_selected = select_model(agentdata, featgroup, datagroup, summary_data_file, directory,
                                                       options)
 
     except:
@@ -193,7 +193,7 @@ def _create_model(infile,options,directory,what_if_file=None):
         return response_code
 
     try:
-        publish_baselines(best_model, ppmdata, featgroup, ppb_data_file, directory)
+        publish_baselines(best_model, agentdata, featgroup, ppb_data_file, directory)
     except:
         response_code = 'BuildError16'
         print("Error is deriving baselines.. please check your data")
@@ -233,7 +233,7 @@ def _create_model(infile,options,directory,what_if_file=None):
         else:
             trials_data = None
         x_at_optimum_y_df, x_at_optimum_y, x_headers, y_optimum = what_if_analysis(best_model, y_optimization_goal,
-                                                                                   ppmdata, datagroup, featgroup,
+                                                                                   agentdata, datagroup, featgroup,
                                                                                    trials_data,
                                                                                    recommended_features_data_file,
                                                                                    directory)
@@ -247,7 +247,7 @@ def _create_model(infile,options,directory,what_if_file=None):
     try:
         if model_type.regression:
             sigma = np.std(best_model.y_all - predict(best_model,best_model.x_all))
-            method_data, risk_score = risk_quantification(ppmdata, datagroup, featgroup, y_optimization_goal, y_optimum,
+            method_data, risk_score = risk_quantification(agentdata, datagroup, featgroup, y_optimization_goal, y_optimum,
                                                       x_at_optimum_y_df,
                                                       best_model, sigma, directory, risk_quantification_file)
             print("Risk Quantification output is saved.")
@@ -260,27 +260,27 @@ def _create_model(infile,options,directory,what_if_file=None):
     return response_code
 
 def get_features(file):
-    ppmdata = load_csv_data(file)
+    agentdata = load_csv_data(file)
     features = {}
-    for col in ppmdata.columns:  # Classify X's into Numerical/Nominal
+    for col in agentdata.columns:  # Classify X's into Numerical/Nominal
         # or Categorical data
         if col[:3] == "XN_":
-            #values = list(np.unique(ppmdata[col]))
-            values = list(ppmdata[col].dropna().unique())
+            #values = list(np.unique(agentdata[col]))
+            values = list(agentdata[col].dropna().unique())
             features[col] = values
         elif col[:3] == "XO_":
-            #values = list(np.unique(ppmdata[col]))
-            values = list(ppmdata[col].dropna().unique())
+            #values = list(np.unique(agentdata[col]))
+            values = list(agentdata[col].dropna().unique())
             features[col] = values
         elif col[:2] == "X_":
-            values = [np.min(ppmdata[col]), np.max(ppmdata[col])]
+            values = [np.min(agentdata[col]), np.max(agentdata[col])]
             features[col] = values
     return features
 
 @api.route('/api/old_model/<id>.html', methods=['GET'])
 @login_required
 def work_with_model(json_work_with_model):
-    ppm = get_ppm_by_id(json_work_with_model['id'])
+    agent = get_agent_by_id(json_work_with_model['id'])
 
     response_code = 0; message = ''
 
@@ -290,10 +290,10 @@ def work_with_model(json_work_with_model):
     save = json_work_with_model.get('save',True)
     what_if_data = None
 
-    directory = os.path.join(current_app.config['OUT_FOLDER'], str(ppm.id))
-    filename = ppm.data
-    base_data = os.path.join(current_app.config['OUT_FOLDER'], str(ppm.id),filename)
-    base_model = os.path.join(current_app.config['OUT_FOLDER'],str(ppm.id),current_app.config['BEST_MODEL'])
+    directory = os.path.join(current_app.config['OUT_FOLDER'], str(agent.id))
+    filename = agent.data
+    base_data = os.path.join(current_app.config['OUT_FOLDER'], str(agent.id),filename)
+    base_model = os.path.join(current_app.config['OUT_FOLDER'],str(agent.id),current_app.config['BEST_MODEL'])
 
     try:
         if controlcharts_data is not None:
@@ -338,11 +338,11 @@ def _work_with_model(infile,best_model_pkl,options,directory,prediction_data=Non
     response_code = 0
     message = ''
     newmodelflag = False
-    utilize_existing_ppm_execute = True
-    ppm_prediction_execute = options.do_predictions
+    utilize_existing_agent_execute = True
+    agent_prediction_execute = options.do_predictions
     what_if_analysis_execute = options.do_what_if
     control_charts_execute = options.do_control_charts
-    ppm_calibration_execute = options.check_calibration
+    agent_calibration_execute = options.check_calibration
     vif_threshold = options.vif_threshold
     outlier_limit_max = options.outlier_limit
     remove_outliers = options.remove_outliers
@@ -375,12 +375,12 @@ def _work_with_model(infile,best_model_pkl,options,directory,prediction_data=Non
     data_in_file = current_app.config['DATA_IN']
     best_model = joblib.load(best_model_pkl)
 
-    ppmdata = load_csv_data(data_file)
+    agentdata = load_csv_data(data_file)
     print("Data is successfully loaded.")
 
     try:
         build_model = False
-        messages, featgroup, outlier_rows, success = analyze_patterns(ppmdata, directory, vif_threshold,
+        messages, featgroup, outlier_rows, success = analyze_patterns(agentdata, directory, vif_threshold,
                                                                     outlier_limit_max, build_model)
     except:
         response_code = 'WWError11'
@@ -394,7 +394,7 @@ def _work_with_model(infile,best_model_pkl,options,directory,prediction_data=Non
         return response_code, message
 
     try:
-        ppmdata, ppmdata_dropped, datagroup, featgroup = prepare_data(featgroup, outlier_rows, ppmdata, remove_outliers)
+        agentdata, agentdata_dropped, datagroup, featgroup = prepare_data(featgroup, outlier_rows, agentdata, remove_outliers)
     except:
         response_code = 'WWError13'
         print("Error in preparing Data. Please check your input")
@@ -403,10 +403,10 @@ def _work_with_model(infile,best_model_pkl,options,directory,prediction_data=Non
 
     best_model = joblib.load(best_model_pkl)
 
-    if ppm_prediction_execute:
+    if agent_prediction_execute:
         try:
             sigma = np.std(best_model.y_all - predict(best_model, best_model.x_all))
-            prediction = predict_for_new_data(best_model, directory, featgroup, ppmdata, new_data_file, sigma,
+            prediction = predict_for_new_data(best_model, directory, featgroup, agentdata, new_data_file, sigma,
                                  prediction_output_file,save=save)
             print("Predictions are saved.")
             if save == True:
@@ -438,7 +438,7 @@ def _work_with_model(infile,best_model_pkl,options,directory,prediction_data=Non
             #else:
              #   trials_data = None
             #x_at_optimum_y_df, x_at_optimum_y, x_headers, y_optimum = what_if_analysis(best_model, y_optimization_goal,
-             #                                                                          ppmdata, datagroup, featgroup,
+             #                                                                          agentdata, datagroup, featgroup,
               #                                                                         trials_data,
                #                                                                        recommended_features_data_file,                                                                                       directory)
         #except:
@@ -491,10 +491,10 @@ def _work_with_model(infile,best_model_pkl,options,directory,prediction_data=Non
             response_code = 'WWError15'
             return response_code, message
 
-    if ppm_calibration_execute:
+    if agent_calibration_execute:
         try:
             currentdata = load_csv_data(current_data_file)
-            message = check_calibration(best_model, ppmdata,currentdata, minimum_rows, MAPE_Tolerance,featgroup,
+            message = check_calibration(best_model, agentdata,currentdata, minimum_rows, MAPE_Tolerance,featgroup,
                                             directory,prediction_output_file)
 
             print(message)
@@ -520,13 +520,13 @@ def upload_model(json_upload_model):
         'author_id': current_app.config['USERID'],
         'datafile': json_upload_model['datafile'],
     }
-    success, ppm = PPM.create_from_json(json_create_model)
-    #db.session.add(ppm)
+    success, agent = agent.create_from_json(json_create_model)
+    #db.session.add(agent)
     #db.session.commit()
     if not success:
         abort(500)
 
-    directory = os.path.join(current_app.config['OUT_FOLDER'], str(ppm.id))
+    directory = os.path.join(current_app.config['OUT_FOLDER'], str(agent.id))
     outfile = os.path.join(directory,json_create_model['reports'])
 
     os.makedirs(directory)
@@ -543,21 +543,21 @@ def upload_model(json_upload_model):
     return 1
 
 
-def get_ppm_by_id(id):
-    success, ppm = PPM.get_ppm_by_id(id)
+def get_agent_by_id(id):
+    success, agent = agent.get_agent_by_id(id)
     if not success:
         abort(500)
-    if ppm is None:
+    if agent is None:
         abort(404)
 
-    return ppm
+    return agent
 
 
-def delete_ppm(id):
-    success, ppm = PPM.delete_ppm(id)
+def delete_agent(id):
+    success, agent = agent.delete_agent(id)
     if not success:
         abort(500)
-    if ppm is None:
+    if agent is None:
         abort(404)
 
     return
@@ -565,18 +565,18 @@ def delete_ppm(id):
 @api.route('/api/listmodels/<page>', methods=['GET', 'POST'])
 @login_required
 def list_models(page,search_project):
-    success, ppmlist = PPM.get_ppm_list(search_project,page, current_app.config['POSTS_PER_PAGE'])
+    success, agentlist = agent.get_agent_list(search_project,page, current_app.config['POSTS_PER_PAGE'])
     if not success:
         abort(500)
 
-    return ppmlist
+    return agentlist
 
 @api.route('/api/model/<id>.html', methods=['GET'])
 @login_required
 def download_reports(id):
-    ppm = get_ppm_by_id(id)
+    agent = get_agent_by_id(id)
     directory = os.path.join(current_app.config['OUT_FOLDER'], str(id))
-    outfile = os.path.join(directory,ppm.reports)
+    outfile = os.path.join(directory,agent.reports)
     if os.path.exists(outfile):
         print("Downloading existing zip")
     else:
@@ -586,18 +586,18 @@ def download_reports(id):
         for filename in filenames:
             outzip.write(os.path.join(directory,filename),arcname=filename,compress_type=zipfile.ZIP_DEFLATED)
         outzip.close()
-    return send_from_directory(directory,ppm.reports,as_attachment=True)
+    return send_from_directory(directory,agent.reports,as_attachment=True)
 
 def get_model_features(id):
-    ppm = get_ppm_by_id(id)
+    agent = get_agent_by_id(id)
 
-    model_pkl = os.path.join(current_app.config['OUT_FOLDER'],str(ppm.id),current_app.config['BEST_MODEL'])
-    data_file = os.path.join(current_app.config['OUT_FOLDER'], str(ppm.id),ppm.data)
+    model_pkl = os.path.join(current_app.config['OUT_FOLDER'],str(agent.id),current_app.config['BEST_MODEL'])
+    data_file = os.path.join(current_app.config['OUT_FOLDER'], str(agent.id),agent.data)
     model = joblib.load(model_pkl)
-    ppmdata = load_csv_data(data_file)
+    agentdata = load_csv_data(data_file)
 
     cat_names = model.features_ord + model.features_nom
-    cat_data = ppmdata[cat_names].values
+    cat_data = agentdata[cat_names].values
     cat_choices_t = []
     for i in range(len(cat_names)):
         cat_choices_t.append(list(np.unique(cat_data[:, i])))
@@ -615,10 +615,10 @@ def get_model_features(id):
 def check_model_version(id):
 
     response_code = 0
-    ppm = get_ppm_by_id(id)
+    agent = get_agent_by_id(id)
 
     try:
-        model_pkl = os.path.join(current_app.config['OUT_FOLDER'], str(ppm.id), current_app.config['BEST_MODEL'])
+        model_pkl = os.path.join(current_app.config['OUT_FOLDER'], str(agent.id), current_app.config['BEST_MODEL'])
         model = joblib.load(model_pkl)
     except:
         print("Model Not present")
@@ -645,7 +645,7 @@ def check_model_version(id):
 
 
 def get_target_name(id):
-    ppm = get_ppm_by_id(id)
-    model_pkl = os.path.join(current_app.config['OUT_FOLDER'],str(ppm.id),current_app.config['BEST_MODEL'])
+    agent = get_agent_by_id(id)
+    model_pkl = os.path.join(current_app.config['OUT_FOLDER'],str(agent.id),current_app.config['BEST_MODEL'])
     model = joblib.load(model_pkl)
     return list(model.target)[0]

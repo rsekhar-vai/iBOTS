@@ -16,13 +16,13 @@ from wtforms import ValidationError
 from wtforms.validators import DataRequired
 
 from . import ui
-from .forms import NewModelForm, OldModelsForm, UserGuideForm, UploadModelForm, \
-    ViewReportsForm, CalibrationForm, ControlChartForm, BatchPredictionForm, DeleteModelForm
+from .forms import NewAgentForm, ExistingAgentsForm, UserGuideForm, \
+    ViewReportsForm, CalibrationForm, ControlChartForm, BatchPredictionForm, DeleteAgentForm
 from .. import api
-from ..api.ppm import list_models, get_ppm_by_id, get_model_features, check_model_version, get_target_name
+from ..api.agent import list_models, get_agent_by_id, get_model_features, check_model_version, get_target_name
 from ..api.utils import load_csv_data
 from ..httpconfig import update_response_headers
-from ..models import PPM, User
+from ..models import Agent, User
 
 
 @ui.before_request
@@ -48,22 +48,22 @@ def after_request(response):
 def index():
     return render_template('index.html')
 
-@ui.route('/new_model.html', methods=['GET', 'POST'])
-@login_required
-def new_model():
-    form = NewModelForm()
+@ui.route('/new_agent.html', methods=['GET', 'POST'])
+#@login_required
+def new_agent():
+    form = NewAgentForm()
     if form.validate_on_submit():
         options = set_default_options()
-        options = options._replace(build_ppm = True,do_control_charts=True,do_what_if=True)
+        options = options._replace(build_agent = True)
         pattern = '[\w-_ ]+'
         error = False
 
-        if  re.fullmatch(pattern,form.project.data) is None:
-            flash('Invalid Input. Project name can have letters, numbers, hypens and underscores only')
+        if  re.fullmatch(pattern,form.process_name.data) is None:
+            flash('Invalid Input. Process name can have letters, numbers, hypens and underscores only')
             error = True
 
-        if re.fullmatch(pattern,form.desc.data) is None:
-            flash('Invalid Input. Description can have letters, numbers, hypens and underscores only')
+        if re.fullmatch(pattern,form.agent_name.data) is None:
+            flash('Invalid Input. Agent Name can have letters, numbers, hypens and underscores only')
             error = True
 
         file = request.files['data']
@@ -72,53 +72,24 @@ def new_model():
             error = True
         filename = werkzeug.secure_filename(file.filename)
 
-        file4 = request.files.get('for_what_if_data', None)
-        if file4 == None or file4.filename == '':
-            file4.filename = None
-            file4 = None
-        else:
-            if file4.filename is not allowed_file(file4.filename):
-                flash('Invalid What if Data File, only .CSV allowed')
-                error = True
-            filename4 = werkzeug.secure_filename(file4.filename)
-            options = options._replace(do_what_if = True)
-
         if error:
-            return render_template('new_model.html', form=form)
+            return render_template('new_agent.html', form=form)
 
         if form.outlier_removal.data:
             options = options._replace(remove_outliers = True)
-        options = options._replace(try_simple_linear = True)
-        if form.support_vectors.data:
-            options = options._replace(try_support_vector = True)
-        if form.neural_networks.data:
-            options = options._replace(try_neural_networks = True)
-        if form.random_forests.data:
-            options = options._replace(try_random_forests = True)
-        if form.decision_trees.data:
-            options = options._replace(try_decision_trees = True)
-        if form.adaboost.data:
-            options = options._replace(try_adaboost = True)
-        if form.bayesian.data:
-            options = options._replace(try_bayesian = True)
-        if form.ridge.data:
-            options = options._replace(try_ridge = True)
-        if form.lasso.data:
-            options = options._replace(try_lasso = True)
-        print("********* Optimization Goal is ", form.optimization_goal.data)
+        print("********* Agent type is ", form.agent_type.data)
         options = options._replace(optimization_goal = form.optimization_goal.data)
-        print("********* Model Objective is ", form.model_objective.data)
-        if form.model_objective.data == 'classification':
+        print("********* Agent Objective is ", form.optimization_goal.data)
+        if form.agent_type.data == 'classification':
             options = options._replace(model_type_classification = True)
         else:
             options = options._replace(model_type_regression=True)
-        json_new_model = {
-            'project': str(form.project.data),
-            'desc' : str(form.desc.data),
+        json_new_agent = {
+            'process_name': str(form.process_name.data),
+            'agent_name' : str(form.agent_name.data),
             'options' : options,
             'features' : None,
             'data' : filename,
-            'for_what_if_data' : file4,
             'reports' : current_app.config['OUT_FILE'],
             'author_id' : g.username,
             'scope' : str(form.scope.data),
@@ -126,7 +97,7 @@ def new_model():
         }
         response_code = 0
         try:
-            response_code, id = api.ppm.create_model(json_new_model)
+            response_code, id = api.agent.create_model(json_new_agent)
         except:
             traceback.print_exc()
             if response_code == 0:
@@ -139,55 +110,12 @@ def new_model():
             flash(get_response_message(response_code))
             return redirect(request.url)
     else:
-        return render_template('new_model.html',form=form)
+        return render_template('new_agent.html',form=form)
 
-@ui.route('/upload_model.html', methods=['GET', 'POST'])
-@login_required
-def upload_model():
-    form = UploadModelForm()
-    if form.validate_on_submit():
-        options = set_default_options()
-
-        pattern = '[\w-_ ]+'
-        error = False
-
-        if  re.fullmatch(pattern,form.project.data) is None:
-            flash('Invalid Input for Project, only Alphanumerics allowed')
-            error = True
-        if re.fullmatch(pattern,form.desc.data) is None:
-            flash('Invalid Input for Description, only Alphanumerics allowed')
-            error = True
-
-        datafile = request.files['datafile']
-        if datafile.filename == '' or not allowed_file(datafile.filename):
-            flash('Invalid Data File, only .CSV allowed')
-            error = True
-        modelfile = request.files['modelfile']
-        if modelfile.filename == '' or not allowed_modelfile(modelfile.filename):
-            flash('Invalid Model File, ohly .PKL allowed')
-            error = True
-        if error:
-            return render_template('upload_model.html',form=form)
-
-        json_upload_model = {
-            'project': str(form.project.data),
-            'desc' : str(form.desc.data),
-            'datafile' : datafile,
-            'model' : modelfile,
-            'options' : options,
-        }
-        success = api.ppm.upload_model(json_upload_model)
-        if success:
-            return redirect(url_for('ui.old_models'))
-        else:
-            abort(500)
-    else:
-        return render_template('upload_model.html',form=form)
-
-@ui.route('/old_models.html', methods=['GET', 'POST'])
-@login_required
-def old_models():
-    form = OldModelsForm()
+@ui.route('/existing_agents.html', methods=['GET', 'POST'])
+#@login_required
+def existing_agents():
+    form = ExistingAgentsForm()
     page = request.args.get('page', 1, type=int)
     sp = request.args.get('sp',"",type=str)
     message = ""
@@ -203,17 +131,29 @@ def old_models():
         form.h_search_project.data = form.search_project.data
         message = "Searched : " + form.h_search_project.data
     pagination = list_models(page,search_project)
-    ppms = pagination.items
+    agents = pagination.items
 
-    return render_template('old_models.html', form=form, ppms=ppms,
+    return render_template('existing_agents.html', form=form, agents=agents,
                            pagination=pagination,search_message=message)
+
+@ui.route('/utilities.html', methods=['GET', 'POST'])
+#@login_required
+def utilities():
+    return render_template('utilities.html')
+
+
+@ui.route('/apis.html', methods=['GET', 'POST'])
+#@login_required
+def apis():
+    return render_template('apis.html')
+
 
 
 @ui.route('/view_reports/<id>.html', methods=['GET'])
-@login_required
+#@login_required
 def view_reports(id):
-    ppm = get_ppm_by_id(id)
-    if ppm is None:
+    agent = get_agent_by_id(id)
+    if agent is None:
         abort(404)
     form = ViewReportsForm()
     directory = os.path.join(current_app.config['OUT_FOLDER'], str(id))
@@ -243,48 +183,48 @@ def view_reports(id):
                            mi_reports=mi_reports,cc_reports=cc_reports,resized_img_src=resized_img_src)
 
 @ui.route('/delete_model/<id>.html', methods=['GET','POST'])
-@login_required
+#@login_required
 def delete_model(id):
-    ppm = get_ppm_by_id(id)
-    if ppm is None:
+    agent = get_agent_by_id(id)
+    if agent is None:
         abort(404)
-    form = DeleteModelForm()
-    form.project = ppm.project
-    form.desc = ppm.desc
+    form = DeleteAgentForm()
+    form.project = agent.project
+    form.desc = agent.desc
     if form.validate_on_submit():
-        success = PPM.delete_ppm(id)
+        success = agent.delete_agent(id)
         if success:
             flash('Successfully Deleted')
         else:
             flash('Not Authorized - Only creator can delete the model')
-        return redirect(url_for('ui.old_models'))
+        return redirect(url_for('ui.existing_agents'))
     else:
         return render_template('delete_model.html',form=form)
 
 @ui.route('/work_with_model/<id>.html', methods=['GET','POST'])
-@login_required
+#@login_required
 def work_with_model(id):
     response_code = check_model_version(id)
     if response_code != 0:
         flash(get_response_message(response_code))
-        return redirect(url_for('ui.old_models'))
+        return redirect(url_for('ui.existing_agents'))
 
-    ppm = get_ppm_by_id(id)
+    agent = get_agent_by_id(id)
     form1 = get_interactive_predictionform(id)
     form1a = BatchPredictionForm()
     form2 = ControlChartForm()
     form3 = CalibrationForm()
-    form1.project = ppm.project
+    form1.project = agent.project
     form1.message1 = ''
     form1.message2 = ''
     form1.message3 = ''
-    form1a.project = ppm.project
-    form1.desc = ppm.desc
-    form1a.desc = ppm.desc
-    form2.project = ppm.project
-    form2.desc = ppm.desc
-    form3.project = ppm.project
-    form3.desc = ppm.desc
+    form1a.project = agent.project
+    form1.desc = agent.desc
+    form1a.desc = agent.desc
+    form2.project = agent.project
+    form2.desc = agent.desc
+    form3.project = agent.project
+    form3.desc = agent.desc
     message = ''
     active1 = ''
     active1a = ''
@@ -299,7 +239,7 @@ def work_with_model(id):
         active1 = 'active'
         in1 = 'in'
         if form1.validate():
-            response_code, message = do_interactive_prediction(id,ppm,form1)
+            response_code, message = do_interactive_prediction(id,agent,form1)
             if response_code == 0:
                 target = get_target_name(id)
                 message1 = "Predicted " + target + " : "
@@ -330,7 +270,7 @@ def work_with_model(id):
                                    in1=in1, in1a=in1a, in2=in2, in3=in3)
         else:
             filename1 = werkzeug.secure_filename(file1.filename)
-        response_code, message = do_batch_prediction(id, file1, filename1, ppm)
+        response_code, message = do_batch_prediction(id, file1, filename1, agent)
         if response_code != 0:
             flash(get_response_message(response_code))
             return render_template('work_with_model.html', form1=form1, form1a=form1a, form2=form2, form3=form3, id=id,
@@ -362,7 +302,7 @@ def work_with_model(id):
         print(charttype)
         print("In view.py.. Target Value entered from UI is ")
         print(target_value)
-        response_code, message = build_control_chart(id,file2,filename2,ppm, charttype, target_value)
+        response_code, message = build_control_chart(id,file2,filename2,agent, charttype, target_value)
         if response_code != 0:
             flash(get_response_message(response_code))
             return render_template('work_with_model.html', form1=form1, form1a=form1a, form2=form2, form3=form3, id=id,
@@ -381,7 +321,7 @@ def work_with_model(id):
                                    in1=in1, in1a=in1a, in2=in2, in3=in3)
         else:
             filename3 = werkzeug.secure_filename(file3.filename)
-        response_code, message = check_calibration(id,file3,filename3,ppm)
+        response_code, message = check_calibration(id,file3,filename3,agent)
         if response_code != 0:
             flash(get_response_message(response_code))
             return render_template('work_with_model.html', form1=form1, form1a=form1a, form2=form2, form3=form3, id=id,
@@ -394,14 +334,14 @@ def work_with_model(id):
                                    in1=in1, in1a=in1a, in2=in2, in3=in3)
 
     else:
-        form1.project = ppm.project
-        form1.desc = ppm.desc
-        form2.project = ppm.project
-        form1a.project = ppm.project
-        form1a.desc = ppm.desc
-        form2.desc = ppm.desc
-        form3.project = ppm.project
-        form3.desc = ppm.desc
+        form1.project = agent.project
+        form1.desc = agent.desc
+        form2.project = agent.project
+        form1a.project = agent.project
+        form1a.desc = agent.desc
+        form2.desc = agent.desc
+        form3.project = agent.project
+        form3.desc = agent.desc
         active1 = ''
         active1a = 'active'
         active2 = ''
@@ -439,13 +379,13 @@ def validate_numeric(form, field):
         field.message = "..Invalid Value! "
         raise ValidationError('Field must be numeric')
 
-def do_interactive_prediction(id, ppm, form):
+def do_interactive_prediction(id, agent, form):
     options = set_default_options()
     options = options._replace(do_predictions = True)
-    if ppm.options == None:
+    if agent.options == None:
         options = options._replace(optimization_goal =  'minimize')
     else:
-        options = options._replace(optimization_goal = ppm.options.get('optimization_goal','minimize'))
+        options = options._replace(optimization_goal = agent.options.get('optimization_goal','minimize'))
     response_code = 0
     file1 = pd.DataFrame(dict(form.data),index=[0])
     json_work_with_model = {
@@ -464,7 +404,7 @@ def do_interactive_prediction(id, ppm, form):
         'save':False,
     }
     try:
-        response_code, message  = api.ppm.work_with_model(json_work_with_model)
+        response_code, message  = api.agent.work_with_model(json_work_with_model)
     except:
         if response_code !=0:
             response_code = 'DPError01'
@@ -473,13 +413,13 @@ def do_interactive_prediction(id, ppm, form):
 
 
 
-def do_batch_prediction(id, file1, filename1, ppm):
+def do_batch_prediction(id, file1, filename1, agent):
     options = set_default_options()
     options = options._replace(do_predictions = True)
-    if ppm.options == None:
+    if agent.options == None:
         options = options._replace(optimization_goal =  'minimize')
     else:
-        options = options._replace(optimization_goal = ppm.options.get('optimization_goal','minimize'))
+        options = options._replace(optimization_goal = agent.options.get('optimization_goal','minimize'))
     response_code = 0
     loaded_file1 = load_csv_data(file1)
     json_work_with_model = {
@@ -497,20 +437,20 @@ def do_batch_prediction(id, file1, filename1, ppm):
         'riskquant_data_name':None,
     }
     try:
-        response_code, message  = api.ppm.work_with_model(json_work_with_model)
+        response_code, message  = api.agent.work_with_model(json_work_with_model)
     except:
         if response_code !=0:
             response_code = 'DPError01'
             print("Error in doing Predictions, please check input data")
     return response_code, message
 
-def build_control_chart(id,file2,filename2,ppm, charttype, target_value):
+def build_control_chart(id,file2,filename2,agent, charttype, target_value):
     options = set_default_options()
 
-    if ppm.options == None:
+    if agent.options == None:
         options = options._replace(optimization_goal =  'minimize')
     else:
-        options = options._replace(optimization_goal = ppm.options.get('optimization_goal','minimize'))
+        options = options._replace(optimization_goal = agent.options.get('optimization_goal','minimize'))
 
     #STart added the below line charttype
     options = options._replace(do_control_charts=True)
@@ -537,7 +477,7 @@ def build_control_chart(id,file2,filename2,ppm, charttype, target_value):
     print("---json-workwithmodel---")
     print(json_work_with_model)
     try:
-        response_code, message  = api.ppm.work_with_model(json_work_with_model)
+        response_code, message  = api.agent.work_with_model(json_work_with_model)
     except:
         if response_code !=0:
             response_code = 'CCError01'
@@ -545,13 +485,13 @@ def build_control_chart(id,file2,filename2,ppm, charttype, target_value):
     return response_code, message
 
 
-def check_calibration(id,file3,filename3,ppm):
+def check_calibration(id,file3,filename3,agent):
     options = set_default_options()
     options = options._replace(check_calibration = True)
-    if ppm.options == None:
+    if agent.options == None:
         options = options._replace(optimization_goal =  'minimize')
     else:
-        options = options._replace(optimization_goal = ppm.options.get('optimization_goal','minimize'))
+        options = options._replace(optimization_goal = agent.options.get('optimization_goal','minimize'))
     response_code = 0
     json_work_with_model = {
         'id': id,
@@ -568,7 +508,7 @@ def check_calibration(id,file3,filename3,ppm):
         'riskquant_data_name':None,
     }
     try:
-        response_code, message  = api.ppm.work_with_model(json_work_with_model)
+        response_code, message  = api.agent.work_with_model(json_work_with_model)
     except:
         if response_code != 0:
             response_code = 'RCError01'
@@ -606,7 +546,7 @@ def send_report(filename):
     return send_from_directory(directory,filename)
 
 def set_default_options():
-    options = namedtuple('options','build_ppm,do_predictions,do_what_if,do_control_charts,check_calibration,do_risk_quantificaiton,   \
+    options = namedtuple('options','build_agent,do_predictions,do_what_if,do_control_charts,check_calibration,do_risk_quantificaiton,   \
                                    try_simple_linear,try_support_vector,try_neural_networks,              \
                                    try_random_forests,try_decision_trees,try_adaboost,try_bayesian,try_ridge,try_lasso,     \
                                    vif_threshold,outlier_limit, remove_outliers, \

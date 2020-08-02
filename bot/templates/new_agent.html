@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+
+{% block title %} iPPA {% endblock %}
+
+
+{% block page_content %}
+
+<form enctype="multipart/form-data" action="" method="post">
+
+    {{ form.hidden_tag() }}
+
+<div style="font-family:Segoe UI">
+	<center>
+    	<h3 class="well">Create New Agent </h3>
+	</center>
+</div>
+
+<div style="font-family:Segoe UI">
+	<div class='col-md-1'>
+    </div>
+    <div class='col-md-5' style="font-family:Segoe UI">
+        <div class="form-row"><div class='form-group'>
+            <label for="process_name"> <h4> Name of the Process </h4></label>
+            {{form.process_name(class='form-control',size='40',type='text',placeholder="Name of the Process",id="process_name")}}
+        </div></div>
+
+        <div class="form-row"><div class='form-group'>
+            <label for="agent_name"> <h4> Name of the Agent </h4> </label>
+            {{form.agent_name(class='form-control',size='40',type='text',placeholder="Name of the Agent",id="agent_name")}}
+        </div></div>
+
+        <div class="form-row"><div class='form-group'>
+			<label for="data"> <h4> Upload the Process Data for Creating Agent </h4> </label>
+            {{form.data(class='form-control',size='40',id="data")}}
+            </span>
+        </div></div>
+    </div>
+    <div class='col-md-1'>
+    </div>
+    <div class='col-md-5' style="font-family:Segoe UI">
+        <h4>Choose Agent Parameters</h4>
+		<div class="form-check">
+            <div class="form-row"><div class='form-group'>
+                <label> Agent Type: </label><br>
+                            {{wtf.form_field(form.agent_type)}}
+            </div></div>
+            <div class="form-row"><div class='form-group'>
+				<label for="optimization_goal"> Optimization Goal (for Regression): </label>
+                            {{wtf.form_field(form.optimization_goal)}}
+
+            </div></div>
+			<label>
+				<input type="checkbox" name="outlier_removal" checked> <span class="label-text">Remove Outliers</span>
+			</label>
+
+    	</div>
+    </div>
+</div>
+
+
+<div class='col-md-11'>
+<div class="form-row"><div class='form-group'>
+    <br>
+    <br>
+    <center>
+        <button class="btn btn-lg btn-primary" type="submit"> Submit  </button>
+    </center>
+</div></div></div>
+
+</form>
+
+{% endblock %}

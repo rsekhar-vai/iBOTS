@@ -1,4 +1,4 @@
-# PPM Utilities Module
+# agent Utilities Module
 #from ..spc import *
 import matplotlib as mpl
 mpl.use('Agg')
@@ -16,7 +16,7 @@ from .predictions import *
 #from .monitors import *
 #from .recommendations import *
 
-def prepare_data(featgroup, rows, ppmdata, outlier_flag):
+def prepare_data(featgroup, rows, agentdata, outlier_flag):
     """ Prepare the data """
 
     y_feat = featgroup.target
@@ -24,19 +24,19 @@ def prepare_data(featgroup, rows, ppmdata, outlier_flag):
     x_feat_ord = featgroup.ord
     x_feat_num_nc = featgroup.num_nc
     x_feat_num_corr = featgroup.num_corr
-    ppmdata_dropped = None
+    agentdata_dropped = None
 
     if outlier_flag and len(rows) > 0:  # Remove Outliers
         #rows = rows - 1
-        indexes_to_keep = set(range(ppmdata.shape[0])) - set(rows)
-        ppmdata_dropped = ppmdata.take(rows)
-        ppmdata = ppmdata.take(list(indexes_to_keep))
+        indexes_to_keep = set(range(agentdata.shape[0])) - set(rows)
+        agentdata_dropped = agentdata.take(rows)
+        agentdata = agentdata.take(list(indexes_to_keep))
 
-    y_data_all = ppmdata[y_feat].values.ravel()
-    x_data_all_nc = ppmdata[x_feat_num_nc].values
-    x_data_num_nc = ppmdata[x_feat_num_nc].values
+    y_data_all = agentdata[y_feat].values.ravel()
+    x_data_all_nc = agentdata[x_feat_num_nc].values
+    x_data_num_nc = agentdata[x_feat_num_nc].values
     x_feat_nc = x_feat_num_nc
-    x_data_num_corr = ppmdata[x_feat_num_corr].values
+    x_data_num_corr = agentdata[x_feat_num_corr].values
 
     num_encoder = StandardScaler()  # To transform Numerical X
     x_data_all_nc = num_encoder.fit_transform(x_data_all_nc)
@@ -48,16 +48,16 @@ def prepare_data(featgroup, rows, ppmdata, outlier_flag):
     if len(x_feat_ord) > 0:  # To transform Ordinal X
         ord_x_mapper = [(x_feat_ord[i], LabelEncoder()) for i, col in enumerate(x_feat_ord)]
         ord_encoder = DataFrameMapper(ord_x_mapper)
-        x_data_ord = ord_encoder.fit_transform(ppmdata)
+        x_data_ord = ord_encoder.fit_transform(agentdata)
         x_data_all_nc = np.append(x_data_all_nc, x_data_ord, 1)
         x_feat_nc = np.append(x_feat_nc, x_feat_ord)
 
     if len(x_feat_nom) > 0:  # To transform Nominal X
-        x_data_nom = np.empty((len(ppmdata[x_feat_nom[0]]), 1))
+        x_data_nom = np.empty((len(agentdata[x_feat_nom[0]]), 1))
         nom_encoder = []
         for i, col in enumerate(x_feat_nom):
-            #dummies = pd.get_dummies(ppmdata[x_feat_nom[i]]).rename(columns=lambda x: 'Category_' + str(x))
-            dummies = pd.get_dummies(ppmdata[x_feat_nom[i]]).rename(columns=lambda x: x_feat_nom[i] + ":" + str(x))
+            #dummies = pd.get_dummies(agentdata[x_feat_nom[i]]).rename(columns=lambda x: 'Category_' + str(x))
+            dummies = pd.get_dummies(agentdata[x_feat_nom[i]]).rename(columns=lambda x: x_feat_nom[i] + ":" + str(x))
             x_data_all_nc = np.append(x_data_all_nc, np.array(dummies), 1)
             x_feat_nc = np.append(x_feat_nc, dummies.columns.values)
 
@@ -81,9 +81,9 @@ def prepare_data(featgroup, rows, ppmdata, outlier_flag):
     x_feat_all = np.append(x_feat_num_corr, x_feat_nc)
     featgroup = featgroup._replace(all_nc=list(x_feat_nc),all=list(x_feat_all))
 
-    return ppmdata, ppmdata_dropped, datagroup, featgroup
+    return agentdata, agentdata_dropped, datagroup, featgroup
 
-def publish_baselines(best_model,ppmdata, featgroup, ppb_data_file, directory, save=True):
+def publish_baselines(best_model,agentdata, featgroup, ppb_data_file, directory, save=True):
 
     num_features = best_model.features_num
     ppbcols = list(best_model.features_num) + list(featgroup.target);
@@ -93,18 +93,18 @@ def publish_baselines(best_model,ppmdata, featgroup, ppb_data_file, directory, s
     ucl = np.zeros(len(ppbcols))
     lcl = np.zeros(len(ppbcols))
     for i in range(len(ppbcols)):
-        nv, normp = ntest(ppmdata[ppbcols[i]].values)
+        nv, normp = ntest(agentdata[ppbcols[i]].values)
         if normp >= 0.05:
-            ucl[i] = np.mean(ppmdata[ppbcols[i]]) + 3 * np.std(ppmdata[ppbcols[i]])
-            lcl[i] = np.mean(ppmdata[ppbcols[i]]) - 3 * np.std(ppmdata[ppbcols[i]])
+            ucl[i] = np.mean(agentdata[ppbcols[i]]) + 3 * np.std(agentdata[ppbcols[i]])
+            lcl[i] = np.mean(agentdata[ppbcols[i]]) - 3 * np.std(agentdata[ppbcols[i]])
             if lcl[i] < 0:
                 lcl[i] = 0
         else:
             ucl[i] = 'NaN'
             lcl[i] = 'NaN'
-    ppb = ppmdata[ppbcols].describe(percentiles=[0.05, 0.25, 0.5, 0.75, 0.95]).append(
-        pd.Series(lcl, index=list(ppmdata[ppbcols].describe().columns), name='lcl'), ignore_index=False)
-    ppb = ppb.append(pd.Series(ucl, index=list(ppmdata[ppbcols].describe().columns), name='ucl'),
+    ppb = agentdata[ppbcols].describe(percentiles=[0.05, 0.25, 0.5, 0.75, 0.95]).append(
+        pd.Series(lcl, index=list(agentdata[ppbcols].describe().columns), name='lcl'), ignore_index=False)
+    ppb = ppb.append(pd.Series(ucl, index=list(agentdata[ppbcols].describe().columns), name='ucl'),
                      ignore_index=False)
     ppb.insert(loc=0,column='Statistic',value=ppb.index)
     ppb.reset_index(drop=True,inplace=True)
@@ -160,7 +160,7 @@ def strip_feature_name(name,drop_category=False):
 
 
 def load_csv_data(data_file):
-    """ To load PPM Data"""
+    """ To load agent Data"""
     return pd.read_csv(data_file)
 
 

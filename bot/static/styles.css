@@ -109,22 +109,22 @@ input#outlier_limit {
     width : 100px;
 }
 
-ul.ppm li.data {
+ul.agent li.data {
     padding: 8px;
     border-bottom: 1px solid #e0e0e0;
 }
-ul.ppm li.data:hover {
+ul.agent li.data:hover {
     background-color: #f0f0f0;
 }
-div.ppm-date {
+div.agent-date {
     float: right;
 }
 
-div.ppm {
+div.agent {
     margin-left: 48px;
     min-height: 48px;
 }
-ul.ppms {
+ul.agents {
     list-style-type: none;
     padding: 0px;
     margin: 16px 0px 0px 0px;

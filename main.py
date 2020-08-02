@@ -2,7 +2,7 @@ import os
 from flask_migrate import Migrate
 import unittest
 from bot import create_app, db
-from bot.models import PPM
+from bot.models import Agent
 from waitress import serve
 import logging
 from paste.translogger import TransLogger
