@@ -90,11 +90,11 @@ class Agent(db.Model):
     process_name = db.Column(db.Text)
     agent_name = db.Column(db.Text)
     options = db.Column(db.PickleType)
-    data = db.Column(db.Text)
+    data = db.Column(db.PickleType)
     features = db.Column(db.PickleType)
-    model = db.Column(db.Text)
+    model = db.Column(db.PickleType)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
-    author = db.Column(db.Integer)
+    author = db.Column(db.String(64))
     scope = db.Column(db.String(64))
 
     def to_json(self):

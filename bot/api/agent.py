@@ -31,11 +31,11 @@ def after_request(response):
     return response
 
 @api.route('/api/createmodel/<model>.html', methods=['POST'])
-@login_required
+#@login_required
 def create_model(json_create_model):
     response_code = 0
     json_create_model['author_id'] = g.username
-    success, agent = agent.create_from_json(json_create_model)
+    success, agent = Agent.create_from_json(json_create_model)
     if not success:
         abort(500)
     id = agent.id
@@ -278,7 +278,7 @@ def get_features(file):
     return features
 
 @api.route('/api/old_model/<id>.html', methods=['GET'])
-@login_required
+#@login_required
 def work_with_model(json_work_with_model):
     agent = get_agent_by_id(json_work_with_model['id'])
 
@@ -508,7 +508,7 @@ def _work_with_model(infile,best_model_pkl,options,directory,prediction_data=Non
 
 
 @api.route('/api/uploadmodel/<model>.html', methods=['POST'])
-@login_required
+#@login_required
 def upload_model(json_upload_model):
 
     json_create_model = {
@@ -563,7 +563,7 @@ def delete_agent(id):
     return
 
 @api.route('/api/listmodels/<page>', methods=['GET', 'POST'])
-@login_required
+#@login_required
 def list_models(page,search_project):
     success, agentlist = agent.get_agent_list(search_project,page, current_app.config['POSTS_PER_PAGE'])
     if not success:
@@ -572,7 +572,7 @@ def list_models(page,search_project):
     return agentlist
 
 @api.route('/api/model/<id>.html', methods=['GET'])
-@login_required
+#@login_required
 def download_reports(id):
     agent = get_agent_by_id(id)
     directory = os.path.join(current_app.config['OUT_FOLDER'], str(id))

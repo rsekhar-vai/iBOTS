@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 import regex as re
 import werkzeug
+from werkzeug.utils import secure_filename
 from flask import g, render_template, session, request, redirect, url_for, current_app, abort, flash, \
     send_from_directory
 from flask_images import resized_img_src
@@ -34,8 +35,16 @@ def before_request():
             g.email = user.email
             g.org = user.org
             g.role = user.role
+        else:
+            g.username = 'testuser'
+            g.email = 'testuser@mail.com'
+            g.org = 'testorg'
+            g.role = 'tester'
     except:
-        pass
+        g.username = 'testuser'
+        g.email = 'testuser@mail.com'
+        g.org = 'testorg'
+        g.role = 'tester'
     return
 
 @ui.after_request
@@ -70,7 +79,7 @@ def new_agent():
         if file.filename == '' or not allowed_file(file.filename):
             flash('Invalid Input Data File, only .CSV allowed')
             error = True
-        filename = werkzeug.secure_filename(file.filename)
+        filename = secure_filename(file.filename)
 
         if error:
             return render_template('new_agent.html', form=form)
@@ -269,7 +278,7 @@ def work_with_model(id):
                                    active1=active1, active1a=active1a, active2=active2, active3=active3,
                                    in1=in1, in1a=in1a, in2=in2, in3=in3)
         else:
-            filename1 = werkzeug.secure_filename(file1.filename)
+            filename1 = secure_filename(file1.filename)
         response_code, message = do_batch_prediction(id, file1, filename1, agent)
         if response_code != 0:
             flash(get_response_message(response_code))
@@ -294,7 +303,7 @@ def work_with_model(id):
                                    active1=active1, active1a=active1a, active2=active2, active3=active3,
                                    in1=in1, in1a=in1a, in2=in2, in3=in3)
         else:
-            filename2 = werkzeug.secure_filename(file2.filename)
+            filename2 = secure_filename(file2.filename)
         #Start -- Added code to include Chart_type as input
         charttype = dict(form2.chart_type.choices).get(form2.chart_type.data)
         target_value = form2.target_value.data
@@ -320,7 +329,7 @@ def work_with_model(id):
                                    active1=active1, active1a=active1a, active2=active2, active3=active3,
                                    in1=in1, in1a=in1a, in2=in2, in3=in3)
         else:
-            filename3 = werkzeug.secure_filename(file3.filename)
+            filename3 = secure_filename(file3.filename)
         response_code, message = check_calibration(id,file3,filename3,agent)
         if response_code != 0:
             flash(get_response_message(response_code))
