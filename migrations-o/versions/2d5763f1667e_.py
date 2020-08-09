@@ -1,8 +1,8 @@
-"""first migration
+"""empty message
 
-Revision ID: 46ba40d9653e
+Revision ID: 2d5763f1667e
 Revises: 
-Create Date: 2020-08-02 15:54:27.209511
+Create Date: 2020-08-02 16:03:49.667154
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '46ba40d9653e'
+revision = '2d5763f1667e'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -23,11 +23,11 @@ def upgrade():
     sa.Column('process_name', sa.Text(), nullable=True),
     sa.Column('agent_name', sa.Text(), nullable=True),
     sa.Column('options', sa.PickleType(), nullable=True),
-    sa.Column('data', sa.Text(), nullable=True),
+    sa.Column('data', sa.PickleType(), nullable=True),
     sa.Column('features', sa.PickleType(), nullable=True),
-    sa.Column('model', sa.Text(), nullable=True),
+    sa.Column('model', sa.PickleType(), nullable=True),
     sa.Column('timestamp', sa.DateTime(), nullable=True),
-    sa.Column('author', sa.Integer(), nullable=True),
+    sa.Column('author', sa.String(length=64), nullable=True),
     sa.Column('scope', sa.String(length=64), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )

@@ -9,7 +9,7 @@ from flask_sqlalchemy import SQLAlchemy
 from config import config
 from flask_login import LoginManager
 from flask_images import Images
-
+from flask_jwt_extended import JWTManager
 
 bootstrap = Bootstrap()
 mail = Mail()
@@ -17,7 +17,7 @@ moment = Moment()
 db = SQLAlchemy()
 login_manager = LoginManager()
 login_manager.login_view = 'auth.login'
-
+jwt = JWTManager()
 
 
 def create_app(config_name):
@@ -32,6 +32,7 @@ def create_app(config_name):
     moment.init_app(app)
     db.init_app(app)
     login_manager.init_app(app)
+    jwt.init_app(app)
 
     from .ui import ui as ui_blueprint
     app.register_blueprint(ui_blueprint)

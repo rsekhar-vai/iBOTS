@@ -3,8 +3,11 @@ from flask_login import login_user, logout_user, login_required, \
     current_user
 
 from . import auth
-from .forms import LoginForm, ChangePasswordForm
+from .forms import LoginForm, ChangePasswordForm, RegistrationForm
 from ..models import User
+from .. import db
+from ..email import send_email
+
 
 
 @auth.before_app_request
@@ -28,7 +31,6 @@ def login():
         flash('Invalid email or password.')
     return render_template('auth/login.html', form=form)
 
-
 @auth.route('/logout')
 @login_required
 def logout():
@@ -36,7 +38,7 @@ def logout():
     flash('You have been logged out.')
     return redirect(url_for('ui.index'))
 
-@auth.route('/change-password', methods=['GET', 'POST'])
+@auth.route('/changepassword', methods=['GET', 'POST'])
 @login_required
 def change_password():
     form = ChangePasswordForm()
@@ -53,4 +55,18 @@ def change_password():
             flash('Invalid password.')
     return render_template("auth/change_password.html", form=form)
 
+@auth.route('/register', methods=['GET', 'POST'])
+def register():
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        user = User(email=form.email.data.lower(),
+                    username=form.username.data,
+                    password=form.password.data)
+        db.session.add(user)
+        db.session.commit()
+        send_email(user.email, 'Welcome',
+                   'auth/mail/new_user', user=user)
+        flash('You can now login.')
+        return redirect(url_for('auth.login'))
+    return render_template('auth/register.html', form=form)
 
