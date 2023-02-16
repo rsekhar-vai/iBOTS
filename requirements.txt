@@ -11,7 +11,7 @@ flask_wtf==0.14.3
 itsdangerous==1.1.0
 matplotlib==3.3.0
 monitors==1.0.1
-numpy==1.19.1
+numpy==1.22.2
 pandas==1.1.0
 PasteScript==3.2.0
 pdpbox==0.2.0
@@ -27,7 +27,7 @@ sklearn_pandas==2.0.0
 statsmodels==0.11.1
 tools==0.1.9
 waitress==1.4.4
-Werkzeug==1.0.1
+Werkzeug==2.2.3
 WTForms==2.3.3
 email-validator
 pylint
@@ -45,3 +45,4 @@ flask-jwt-extended
 
 
 
+setuptools>=65.5.1 # not directly required, pinned by Snyk to avoid a vulnerability
