@@ -27,7 +27,7 @@ sklearn_pandas==2.0.0
 statsmodels==0.11.1
 tools==0.1.9
 waitress==1.4.4
-Werkzeug==1.0.1
+Werkzeug==3.0.1
 WTForms==2.3.3
 email-validator
 pylint
@@ -45,3 +45,4 @@ flask-jwt-extended
 
 
 
+pillow>=10.0.0 # not directly required, pinned by Snyk to avoid a vulnerability
