@@ -1,4 +1,4 @@
-FROM python:3.7 
+FROM python:3.10.13 
 WORKDIR /bot
 ADD . /bot
 RUN pip install -r requirements.txt
